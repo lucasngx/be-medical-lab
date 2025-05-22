@@ -13,4 +13,6 @@ public interface PrescriptionItemService {
     PrescriptionItem createPrescriptionItem(PrescriptionItem prescriptionItem);
     PrescriptionItem updatePrescriptionItem(Long id, PrescriptionItem prescriptionItemDetails);
     void deletePrescriptionItem(Long id);
+    List<PrescriptionItem> getPrescriptionItemsByMedicationId(Long medicationId);
+    List<PrescriptionItem> getPrescriptionItemsByPatientId(Long patientId);
 }

@@ -26,25 +26,29 @@ public class Patient {
     private String email;
 
     @Column(nullable = false)
-    private String phone;
+    private String password;
 
     @Column(nullable = false)
-    private String address;
+    private String phone;
 
-    @Column(name = "date_of_birth", nullable = false)
-    private String dateOfBirth;
+    @Column(name = "date_of_birth")
+    @Temporal(TemporalType.DATE)
+    private Date dateOfBirth;
 
     @Column(nullable = false)
     private String gender;
 
-    @Column(name = "medical_history", columnDefinition = "TEXT")
-    private String medicalHistory;
+    @Column(length = 1000)
+    private String address;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(nullable = false)
+    private String status;
+
+    @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 

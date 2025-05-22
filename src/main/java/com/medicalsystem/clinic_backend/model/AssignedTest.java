@@ -18,19 +18,31 @@ public class AssignedTest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
+    @ManyToOne
+    @JoinColumn(name = "examination_id", nullable = false)
+    private Examination examination;
+
+    @ManyToOne
+    @JoinColumn(name = "lab_test_id", nullable = false)
+    private LabTest labTest;
+
+    @ManyToOne
+    @JoinColumn(name = "technician_id")
+    private Technician technician;
+
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private TestStatus status;
+
+    @Column(length = 1000)
+    private String result;
+
+    @Column(length = 1000)
+    private String notes;
 
     @Column(name = "assigned_date", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date assignedDate;
-
-    @Column(name = "examination_id", nullable = false)
-    private Long examinationId;
-
-    @Column(name = "lab_test_id", nullable = false)
-    private Long labTestId;
 
     @Column(name = "created_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)

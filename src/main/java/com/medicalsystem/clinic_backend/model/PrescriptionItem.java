@@ -1,7 +1,6 @@
 package com.medicalsystem.clinic_backend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,14 +10,18 @@ import java.util.Date;
 @Table(name = "prescription_items")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class PrescriptionItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "medication_name", nullable = false)
-    private String medicationName;
+    @ManyToOne
+    @JoinColumn(name = "prescription_id", nullable = false)
+    private Prescription prescription;
+
+    @ManyToOne
+    @JoinColumn(name = "medication_id", nullable = false)
+    private Medication medication;
 
     @Column(nullable = false)
     private String dosage;
@@ -32,15 +35,11 @@ public class PrescriptionItem {
     @Column(length = 1000)
     private String instructions;
 
-    @ManyToOne
-    @JoinColumn(name = "prescription_id", nullable = false)
-    private Prescription prescription;
-
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 

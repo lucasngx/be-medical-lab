@@ -37,11 +37,6 @@ public class PrescriptionItemServiceImpl implements PrescriptionItemService {
     }
 
     @Override
-    public List<PrescriptionItem> getPrescriptionItemsByPrescriptionId(Long prescriptionId) {
-        return prescriptionItemRepository.findByPrescriptionId(prescriptionId);
-    }
-
-    @Override
     @Transactional
     public PrescriptionItem createPrescriptionItem(PrescriptionItem prescriptionItem) {
         prescriptionItem.setCreatedAt(new Date());
@@ -54,7 +49,7 @@ public class PrescriptionItemServiceImpl implements PrescriptionItemService {
     public PrescriptionItem updatePrescriptionItem(Long id, PrescriptionItem prescriptionItemDetails) {
         PrescriptionItem prescriptionItem = getPrescriptionItemById(id);
 
-        prescriptionItem.setMedicationName(prescriptionItemDetails.getMedicationName());
+        prescriptionItem.setMedication(prescriptionItemDetails.getMedication());
         prescriptionItem.setDosage(prescriptionItemDetails.getDosage());
         prescriptionItem.setFrequency(prescriptionItemDetails.getFrequency());
         prescriptionItem.setDuration(prescriptionItemDetails.getDuration());
@@ -69,5 +64,20 @@ public class PrescriptionItemServiceImpl implements PrescriptionItemService {
     public void deletePrescriptionItem(Long id) {
         PrescriptionItem prescriptionItem = getPrescriptionItemById(id);
         prescriptionItemRepository.delete(prescriptionItem);
+    }
+
+    @Override
+    public List<PrescriptionItem> getPrescriptionItemsByPrescriptionId(Long prescriptionId) {
+        return prescriptionItemRepository.findByPrescriptionId(prescriptionId);
+    }
+
+    @Override
+    public List<PrescriptionItem> getPrescriptionItemsByMedicationId(Long medicationId) {
+        return prescriptionItemRepository.findByMedicationId(medicationId);
+    }
+
+    @Override
+    public List<PrescriptionItem> getPrescriptionItemsByPatientId(Long patientId) {
+        return prescriptionItemRepository.findByPatientId(patientId);
     }
 } 

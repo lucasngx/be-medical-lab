@@ -29,59 +29,58 @@ public class AssignedTestServiceImpl implements AssignedTestService {
 
     @Override
     public PaginatedResponse<AssignedTest> getAllAssignedTests(Pageable pageable) {
-        Page<AssignedTest> pageResult = assignedTestRepository.findAll(pageable);
-        
-        PaginatedResponse<AssignedTest> response = new PaginatedResponse<>();
-        response.setData(pageResult.getContent());
-        response.setTotal(pageResult.getTotalElements());
-        response.setPage(pageable.getPageNumber() + 1);
-        response.setLimit(pageable.getPageSize());
-        return response;
+        Page<AssignedTest> page = assignedTestRepository.findAll(pageable);
+        return new PaginatedResponse<>(
+            page.getContent(),
+            page.getTotalElements(),
+            page.getNumber(),
+            page.getSize()
+        );
     }
 
     @Override
     public AssignedTest getAssignedTestById(Long id) {
         return assignedTestRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Assigned Test not found with id: " + id));
+            .orElseThrow(() -> new ResourceNotFoundException("AssignedTest not found with id: " + id));
     }
 
     @Override
     @Transactional
     public AssignedTest createAssignedTest(AssignedTest assignedTest) {
+        assignedTest.setCreatedAt(new Date());
+        assignedTest.setUpdatedAt(new Date());
         assignedTest.setStatus(TestStatus.PENDING);
-        assignedTest.setAssignedDate(new Date());
         return assignedTestRepository.save(assignedTest);
     }
 
     @Override
     @Transactional
-    public AssignedTest updateAssignedTest(Long id, AssignedTest assignedTest) {
-        AssignedTest existingTest = getAssignedTestById(id);
-        
-        // Update only the fields that should be updatable
-        existingTest.setStatus(assignedTest.getStatus());
-        existingTest.setAssignedDate(assignedTest.getAssignedDate());
-        
-        return assignedTestRepository.save(existingTest);
+    public AssignedTest updateAssignedTest(Long id, AssignedTest assignedTestDetails) {
+        AssignedTest assignedTest = getAssignedTestById(id);
+
+        assignedTest.setStatus(assignedTestDetails.getStatus());
+        assignedTest.setResult(assignedTestDetails.getResult());
+        assignedTest.setNotes(assignedTestDetails.getNotes());
+        assignedTest.setUpdatedAt(new Date());
+
+        return assignedTestRepository.save(assignedTest);
     }
 
     @Override
     @Transactional
     public void deleteAssignedTest(Long id) {
-        if (!assignedTestRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Assigned Test not found with id: " + id);
-        }
-        assignedTestRepository.deleteById(id);
+        AssignedTest assignedTest = getAssignedTestById(id);
+        assignedTestRepository.delete(assignedTest);
     }
 
     @Override
     @Transactional
     public AssignedTest assignLabTest(AssignedTest assignedTest) {
-        if (assignedTest.getExaminationId() == null) {
-            throw new IllegalArgumentException("AssignedTest must include a valid examination ID.");
+        if (assignedTest.getExamination() == null || assignedTest.getExamination().getId() == null) {
+            throw new IllegalArgumentException("AssignedTest must include a valid examination.");
         }
 
-        Examination examination = examinationService.getExaminationById(assignedTest.getExaminationId());
+        Examination examination = examinationService.getExaminationById(assignedTest.getExamination().getId());
 
         if (examination.getStatus() == ExaminationStatus.SCHEDULED) {
             examinationService.updateExaminationStatus(examination.getId(), ExaminationStatus.IN_PROGRESS);
@@ -107,24 +106,32 @@ public class AssignedTestServiceImpl implements AssignedTestService {
     public PaginatedResponse<AssignedTest> getAssignedTestsByStatus(int page, int limit, TestStatus status) {
         Pageable pageable = PageRequest.of(page - 1, limit);
         Page<AssignedTest> pageResult = assignedTestRepository.findByStatus(pageable, status);
-
-        PaginatedResponse<AssignedTest> response = new PaginatedResponse<>();
-        response.setData(pageResult.getContent());
-        response.setTotal(pageResult.getTotalElements());
-        response.setPage(page);
-        response.setLimit(limit);
-        return response;
+        return new PaginatedResponse<>(
+            pageResult.getContent(),
+            pageResult.getTotalElements(),
+            pageResult.getNumber(),
+            pageResult.getSize()
+        );
     }
 
     @Override
-    public PaginatedResponse<AssignedTest> searchAssignedTests(String patientName, ExaminationStatus status, Pageable pageable) {
-        Page<AssignedTest> page = assignedTestRepository.searchAssignedTests(patientName, status, pageable);
-        
-        PaginatedResponse<AssignedTest> response = new PaginatedResponse<>();
-        response.setData(page.getContent());
-        response.setTotal(page.getTotalElements());
-        response.setPage(pageable.getPageNumber() + 1);
-        response.setLimit(pageable.getPageSize());
-        return response;
+    public PaginatedResponse<AssignedTest> searchAssignedTests(String searchTerm, TestStatus status, Pageable pageable) {
+        Page<AssignedTest> page = assignedTestRepository.searchAssignedTests(searchTerm, status, pageable);
+        return new PaginatedResponse<>(
+            page.getContent(),
+            page.getTotalElements(),
+            page.getNumber(),
+            page.getSize()
+        );
+    }
+
+    @Override
+    public List<AssignedTest> getAssignedTestsByPatientId(Long patientId) {
+        return assignedTestRepository.findByPatientId(patientId);
+    }
+
+    @Override
+    public List<AssignedTest> getAssignedTestsByTechnicianId(Long technicianId) {
+        return assignedTestRepository.findByTechnicianId(technicianId);
     }
 } 

@@ -1,17 +1,15 @@
 package com.medicalsystem.clinic_backend.controller;
 
 import com.medicalsystem.clinic_backend.model.AssignedTest;
-import com.medicalsystem.clinic_backend.model.enums.ExaminationStatus;
 import com.medicalsystem.clinic_backend.model.enums.TestStatus;
 import com.medicalsystem.clinic_backend.response.PaginatedResponse;
 import com.medicalsystem.clinic_backend.service.AssignedTestService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -21,7 +19,10 @@ public class AssignedTestController {
     private final AssignedTestService assignedTestService;
 
     @GetMapping
-    public ResponseEntity<PaginatedResponse<AssignedTest>> getAllAssignedTests(Pageable pageable) {
+    public ResponseEntity<PaginatedResponse<AssignedTest>> getAllAssignedTests(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(assignedTestService.getAllAssignedTests(pageable));
     }
 
@@ -31,13 +32,15 @@ public class AssignedTestController {
     }
 
     @PostMapping
-    public ResponseEntity<AssignedTest> createAssignedTest(@Valid @RequestBody AssignedTest assignedTest) {
-        return new ResponseEntity<>(assignedTestService.createAssignedTest(assignedTest), HttpStatus.CREATED);
+    public ResponseEntity<AssignedTest> createAssignedTest(@RequestBody AssignedTest assignedTest) {
+        return ResponseEntity.ok(assignedTestService.createAssignedTest(assignedTest));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AssignedTest> updateAssignedTest(@PathVariable Long id, @Valid @RequestBody AssignedTest assignedTest) {
-        return ResponseEntity.ok(assignedTestService.updateAssignedTest(id, assignedTest));
+    public ResponseEntity<AssignedTest> updateAssignedTest(
+            @PathVariable Long id,
+            @RequestBody AssignedTest assignedTestDetails) {
+        return ResponseEntity.ok(assignedTestService.updateAssignedTest(id, assignedTestDetails));
     }
 
     @DeleteMapping("/{id}")
@@ -47,8 +50,8 @@ public class AssignedTestController {
     }
 
     @PostMapping("/assign")
-    public ResponseEntity<AssignedTest> assignLabTest(@Valid @RequestBody AssignedTest assignedTest) {
-        return new ResponseEntity<>(assignedTestService.assignLabTest(assignedTest), HttpStatus.CREATED);
+    public ResponseEntity<AssignedTest> assignLabTest(@RequestBody AssignedTest assignedTest) {
+        return ResponseEntity.ok(assignedTestService.assignLabTest(assignedTest));
     }
 
     @PutMapping("/{id}/status")
@@ -59,7 +62,8 @@ public class AssignedTestController {
     }
 
     @GetMapping("/examination/{examinationId}")
-    public ResponseEntity<List<AssignedTest>> getAssignedTestsByExaminationId(@PathVariable Long examinationId) {
+    public ResponseEntity<List<AssignedTest>> getAssignedTestsByExaminationId(
+            @PathVariable Long examinationId) {
         return ResponseEntity.ok(assignedTestService.getAssignedTestsByExaminationId(examinationId));
     }
 
@@ -73,9 +77,23 @@ public class AssignedTestController {
 
     @GetMapping("/search")
     public ResponseEntity<PaginatedResponse<AssignedTest>> searchAssignedTests(
-            @RequestParam(required = false) String patientName,
-            @RequestParam(required = false) ExaminationStatus status,
-            Pageable pageable) {
-        return ResponseEntity.ok(assignedTestService.searchAssignedTests(patientName, status, pageable));
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(required = false) TestStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(assignedTestService.searchAssignedTests(searchTerm, status, pageable));
+    }
+
+    @GetMapping("/patient/{patientId}")
+    public ResponseEntity<List<AssignedTest>> getAssignedTestsByPatientId(
+            @PathVariable Long patientId) {
+        return ResponseEntity.ok(assignedTestService.getAssignedTestsByPatientId(patientId));
+    }
+
+    @GetMapping("/technician/{technicianId}")
+    public ResponseEntity<List<AssignedTest>> getAssignedTestsByTechnicianId(
+            @PathVariable Long technicianId) {
+        return ResponseEntity.ok(assignedTestService.getAssignedTestsByTechnicianId(technicianId));
     }
 }

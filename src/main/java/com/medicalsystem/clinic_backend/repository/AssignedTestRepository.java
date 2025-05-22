@@ -17,16 +17,21 @@ public interface AssignedTestRepository extends JpaRepository<AssignedTest, Long
     List<AssignedTest> findByExaminationId(Long examinationId);
     List<AssignedTest> findByLabTestId(Long labTestId);
     Page<AssignedTest> findByStatus(Pageable pageable, TestStatus status);
+    
+    @Query("SELECT at FROM AssignedTest at WHERE at.examination.patient.id = :patientId")
+    List<AssignedTest> findByPatientId(@Param("patientId") Long patientId);
+    
+    @Query("SELECT at FROM AssignedTest at WHERE at.technician.id = :technicianId")
+    List<AssignedTest> findByTechnicianId(@Param("technicianId") Long technicianId);
 
-    @Query("SELECT at FROM AssignedTest at " +
-           "JOIN Examination e ON at.examinationId = e.id " +
-           "JOIN Patient p ON e.patientId = p.id " +
-           "WHERE (:patientName IS NULL OR LOWER(p.firstName) LIKE LOWER(CONCAT('%', :patientName, '%')) " +
-           "OR LOWER(p.lastName) LIKE LOWER(CONCAT('%', :patientName, '%'))) " +
-           "AND (:status IS NULL OR e.status = :status)")
+    @Query("SELECT at FROM AssignedTest at WHERE " +
+           "(:searchTerm IS NULL OR LOWER(at.examination.patient.firstName) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+           "LOWER(at.examination.patient.lastName) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+           "LOWER(at.labTest.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))) AND " +
+           "(:status IS NULL OR at.status = :status)")
     Page<AssignedTest> searchAssignedTests(
-        @Param("patientName") String patientName,
-        @Param("status") ExaminationStatus status,
+        @Param("searchTerm") String searchTerm,
+        @Param("status") TestStatus status,
         Pageable pageable
     );
 }

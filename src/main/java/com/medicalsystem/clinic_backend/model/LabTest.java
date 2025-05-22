@@ -19,11 +19,18 @@ public class LabTest {
     @Column(nullable = false)
     private String name;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 1000)
     private String description;
 
-    @Embedded
-    private RefRange refRange;
+    @Column(nullable = false)
+    private Double price;
+
+    @Column(nullable = false)
+    private String status;
+
+    @ManyToOne
+    @JoinColumn(name = "patient_id")
+    private Patient patient;
 
     @Column(name = "created_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)

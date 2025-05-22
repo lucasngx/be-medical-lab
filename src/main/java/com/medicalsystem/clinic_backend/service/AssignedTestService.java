@@ -22,7 +22,7 @@ public interface AssignedTestService {
     PaginatedResponse<AssignedTest> getAllAssignedTests(Pageable pageable);
     AssignedTest getAssignedTestById(Long id);
     AssignedTest createAssignedTest(AssignedTest assignedTest);
-    AssignedTest updateAssignedTest(Long id, AssignedTest assignedTest);
+    AssignedTest updateAssignedTest(Long id, AssignedTest assignedTestDetails);
     void deleteAssignedTest(Long id);
 
     // Business operations
@@ -32,5 +32,7 @@ public interface AssignedTestService {
     // Query operations
     List<AssignedTest> getAssignedTestsByExaminationId(Long examinationId);
     PaginatedResponse<AssignedTest> getAssignedTestsByStatus(int page, int limit, TestStatus status);
-    PaginatedResponse<AssignedTest> searchAssignedTests(String patientName, ExaminationStatus status, Pageable pageable);
+    PaginatedResponse<AssignedTest> searchAssignedTests(String searchTerm, TestStatus status, Pageable pageable);
+    List<AssignedTest> getAssignedTestsByPatientId(Long patientId);
+    List<AssignedTest> getAssignedTestsByTechnicianId(Long technicianId);
 }
