@@ -1,10 +1,13 @@
 package com.medicalsystem.clinic_backend.service.impl;
 
 import com.medicalsystem.clinic_backend.exception.ResourceNotFoundException;
+import com.medicalsystem.clinic_backend.model.Examination;
 import com.medicalsystem.clinic_backend.model.Prescription;
 import com.medicalsystem.clinic_backend.model.PrescriptionItem;
+import com.medicalsystem.clinic_backend.model.enums.ExaminationStatus;
 import com.medicalsystem.clinic_backend.repository.PrescriptionRepository;
 import com.medicalsystem.clinic_backend.response.PaginatedResponse;
+import com.medicalsystem.clinic_backend.service.ExaminationService;
 import com.medicalsystem.clinic_backend.service.PrescriptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PrescriptionServiceImpl implements PrescriptionService {
     private final PrescriptionRepository prescriptionRepository;
+    private final ExaminationService examinationService;
 
     @Override
     public PaginatedResponse<Prescription> getAllPrescriptions(Pageable pageable) {
@@ -38,18 +42,32 @@ public class PrescriptionServiceImpl implements PrescriptionService {
     }
 
     @Override
+    public Prescription getPrescriptionByExaminationId(Long examinationId) {
+        return prescriptionRepository.findByExaminationId(examinationId)
+            .orElseThrow(() -> new ResourceNotFoundException("Prescription not found for examination id: " + examinationId));
+    }
+
+    @Override
     @Transactional
     public Prescription createPrescription(Prescription prescription) {
         prescription.setCreatedAt(new Date());
         prescription.setUpdatedAt(new Date());
-        
-        // Set prescription reference for each item
+        return prescriptionRepository.save(prescription);
+    }
+
+    @Override
+    @Transactional
+    public Prescription createPrescriptionWithItems(Prescription prescription) {
+        // Get and update examination
+        Examination examination = examinationService.getExaminationById(prescription.getExaminationId());
+        examinationService.updateExaminationStatus(examination.getId(), ExaminationStatus.COMPLETED);
+
+        // Set prescriptionId for prescription items
         if (prescription.getItems() != null) {
-            for (PrescriptionItem item : prescription.getItems()) {
-                item.setPrescription(prescription);
-            }
+            prescription.getItems().forEach(item -> item.setPrescription(prescription));
         }
-        
+
+        // Save and return
         return prescriptionRepository.save(prescription);
     }
 
@@ -91,11 +109,5 @@ public class PrescriptionServiceImpl implements PrescriptionService {
     @Override
     public List<Prescription> getPrescriptionsByDoctorId(Long doctorId) {
         return prescriptionRepository.findByDoctorId(doctorId);
-    }
-
-    @Override
-    public Prescription getPrescriptionByExaminationId(Long examinationId) {
-        return prescriptionRepository.findByExaminationId(examinationId)
-            .orElseThrow(() -> new ResourceNotFoundException("Prescription not found for examination id: " + examinationId));
     }
 } 

@@ -9,9 +9,10 @@ import java.util.List;
 public interface PatientService {
     PaginatedResponse<Patient> getAllPatients(Pageable pageable);
     Patient getPatientById(Long id);
-    List<Patient> searchPatientsByName(String name);
+    Patient getPatientByEmail(String email);
     Patient createPatient(Patient patient);
     Patient updatePatient(Long id, Patient patientDetails);
     void deletePatient(Long id);
+    List<Patient> searchPatientsByName(String firstName, String lastName);
     Patient getById(Long id);
 }

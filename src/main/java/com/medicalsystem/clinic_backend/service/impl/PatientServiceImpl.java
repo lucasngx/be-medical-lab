@@ -8,6 +8,7 @@ import com.medicalsystem.clinic_backend.service.PatientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,15 +19,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PatientServiceImpl implements PatientService {
     private final PatientRepository patientRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public PaginatedResponse<Patient> getAllPatients(Pageable pageable) {
-        Page<Patient> patientPage = patientRepository.findAll(pageable);
+        Page<Patient> page = patientRepository.findAll(pageable);
         return new PaginatedResponse<>(
-            patientPage.getContent(),
-            patientPage.getTotalElements(),
-            patientPage.getNumber(),
-            patientPage.getSize()
+            page.getContent(),
+            page.getTotalElements(),
+            page.getNumber(),
+            page.getSize()
         );
     }
 
@@ -37,13 +39,15 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public List<Patient> searchPatientsByName(String name) {
-        return patientRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(name, name);
+    public Patient getPatientByEmail(String email) {
+        return patientRepository.findByEmail(email)
+            .orElseThrow(() -> new ResourceNotFoundException("Patient not found with email: " + email));
     }
 
     @Override
     @Transactional
     public Patient createPatient(Patient patient) {
+        patient.setPassword(passwordEncoder.encode(patient.getPassword()));
         patient.setCreatedAt(new Date());
         patient.setUpdatedAt(new Date());
         return patientRepository.save(patient);
@@ -61,7 +65,7 @@ public class PatientServiceImpl implements PatientService {
         patient.setDateOfBirth(patientDetails.getDateOfBirth());
         patient.setGender(patientDetails.getGender());
         patient.setAddress(patientDetails.getAddress());
-        patient.setMedicalHistory(patientDetails.getMedicalHistory());
+        patient.setStatus(patientDetails.getStatus());
         patient.setUpdatedAt(new Date());
 
         return patientRepository.save(patient);
@@ -72,6 +76,14 @@ public class PatientServiceImpl implements PatientService {
     public void deletePatient(Long id) {
         Patient patient = getPatientById(id);
         patientRepository.delete(patient);
+    }
+
+    @Override
+    public List<Patient> searchPatientsByName(String firstName, String lastName) {
+        return patientRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
+            firstName != null ? firstName : "",
+            lastName != null ? lastName : ""
+        );
     }
 
     @Override

@@ -14,84 +14,15 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-public class TechnicianService {
-    private final TechnicianRepository technicianRepository;
-    private final PasswordEncoder passwordEncoder;
-
-    public PaginatedResponse<Technician> getAllTechnicians(Pageable pageable) {
-        Page<Technician> page = technicianRepository.findAll(pageable);
-        return new PaginatedResponse<>(
-            page.getContent(),
-            page.getTotalElements(),
-            page.getNumber(),
-            page.getSize()
-        );
-    }
-
-    public Technician getTechnicianById(Long id) {
-        return technicianRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Technician not found with id: " + id));
-    }
-
-    public Technician getTechnicianByEmail(String email) {
-        return technicianRepository.findByEmail(email)
-            .orElseThrow(() -> new ResourceNotFoundException("Technician not found with email: " + email));
-    }
-
-    public Technician createTechnician(Technician technician) {
-        technician.setPassword(passwordEncoder.encode(technician.getPassword()));
-        technician.setCreatedAt(new Date());
-        technician.setUpdatedAt(new Date());
-        return technicianRepository.save(technician);
-    }
-
-    public Technician updateTechnician(Long id, Technician technicianDetails) {
-        Technician technician = getTechnicianById(id);
-
-        technician.setFirstName(technicianDetails.getFirstName());
-        technician.setLastName(technicianDetails.getLastName());
-        technician.setEmail(technicianDetails.getEmail());
-        technician.setPhone(technicianDetails.getPhone());
-        technician.setStatus(technicianDetails.getStatus());
-        technician.setUpdatedAt(new Date());
-
-        return technicianRepository.save(technician);
-    }
-
-    public void deleteTechnician(Long id) {
-        Technician technician = getTechnicianById(id);
-        technicianRepository.delete(technician);
-    }
-
-    public PaginatedResponse<Technician> searchTechnicians(String firstName, String lastName, Pageable pageable) {
-        Page<Technician> page;
-        if ((firstName != null && !firstName.isEmpty()) || (lastName != null && !lastName.isEmpty())) {
-            page = technicianRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
-                firstName != null ? firstName : "",
-                lastName != null ? lastName : "",
-                pageable
-            );
-        } else {
-            page = technicianRepository.findAll(pageable);
-        }
-        
-        return new PaginatedResponse<>(
-            page.getContent(),
-            page.getTotalElements(),
-            page.getNumber(),
-            page.getSize()
-        );
-    }
-
-    public List<Technician> searchTechniciansByName(String name) {
-        // Implementation needed
-        throw new UnsupportedOperationException("Method not implemented");
-    }
-
-    public List<Technician> getTechniciansBySpecialization(String specialization) {
-        // Implementation needed
-        throw new UnsupportedOperationException("Method not implemented");
-    }
+public interface TechnicianService {
+    PaginatedResponse<Technician> getAllTechnicians(Pageable pageable);
+    Technician getTechnicianById(Long id);
+    Technician getTechnicianByEmail(String email);
+    Technician createTechnician(Technician technician);
+    Technician updateTechnician(Long id, Technician technicianDetails);
+    void deleteTechnician(Long id);
+    PaginatedResponse<Technician> searchTechnicians(String firstName, String lastName, Pageable pageable);
+    List<Technician> searchTechniciansByName(String name);
+    List<Technician> getTechniciansBySpecialization(String specialization);
+    Technician getById(Long id);
 }

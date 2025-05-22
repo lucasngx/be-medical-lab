@@ -40,6 +40,9 @@ public class Medication {
     @Column(nullable = false)
     private String category;
 
+    @Column(length = 1000)
+    private String instructions;
+
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;

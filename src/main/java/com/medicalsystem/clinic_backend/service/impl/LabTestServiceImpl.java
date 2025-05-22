@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -32,12 +33,15 @@ public class LabTestServiceImpl implements LabTestService {
     @Override
     public LabTest getLabTestById(Long id) {
         return labTestRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Lab Test not found with id: " + id));
+            .orElseThrow(() -> new ResourceNotFoundException("LabTest not found with id: " + id));
     }
 
     @Override
     @Transactional
     public LabTest createLabTest(LabTest labTest) {
+        labTest.setCreatedAt(new Date());
+        labTest.setUpdatedAt(new Date());
+        labTest.setStatus("ACTIVE");
         return labTestRepository.save(labTest);
     }
 
@@ -48,7 +52,9 @@ public class LabTestServiceImpl implements LabTestService {
 
         labTest.setName(labTestDetails.getName());
         labTest.setDescription(labTestDetails.getDescription());
-        labTest.setRefRange(labTestDetails.getRefRange());
+        labTest.setPrice(labTestDetails.getPrice());
+        labTest.setStatus(labTestDetails.getStatus());
+        labTest.setUpdatedAt(new Date());
 
         return labTestRepository.save(labTest);
     }
@@ -63,5 +69,10 @@ public class LabTestServiceImpl implements LabTestService {
     @Override
     public List<LabTest> searchLabTestsByName(String name) {
         return labTestRepository.findByNameContainingIgnoreCase(name);
+    }
+
+    @Override
+    public List<LabTest> getLabTestsByPatientId(Long patientId) {
+        return labTestRepository.findByPatientId(patientId);
     }
 } 

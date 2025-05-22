@@ -25,4 +25,6 @@ public interface LabTestService {
 
     // Query operations
     List<LabTest> searchLabTestsByName(String name);
+
+    List<LabTest> getLabTestsByPatientId(Long patientId);
 }

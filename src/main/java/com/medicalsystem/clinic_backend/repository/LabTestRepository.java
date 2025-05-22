@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface LabTestRepository extends JpaRepository<LabTest, Long> {
     List<LabTest> findByNameContainingIgnoreCase(String name);
+    List<LabTest> findByPatientId(Long patientId);
 }

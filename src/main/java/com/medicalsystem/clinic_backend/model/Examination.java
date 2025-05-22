@@ -2,7 +2,6 @@ package com.medicalsystem.clinic_backend.model;
 
 import com.medicalsystem.clinic_backend.model.enums.ExaminationStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,36 +11,40 @@ import java.util.Date;
 @Table(name = "examinations")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class Examination {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
+    @ManyToOne
+    @JoinColumn(name = "patient_id", nullable = false)
+    private Patient patient;
+
+    @ManyToOne
+    @JoinColumn(name = "doctor_id", nullable = false)
+    private Doctor doctor;
+
     @Column(name = "examination_date", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date examinationDate;
-    
+
     @Column(nullable = false)
     private String symptoms;
-    
+
+    @Column(length = 1000)
+    private String notes;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ExaminationStatus status;
-    
-    @Column(name = "created_at", nullable = false)
+
+    @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
-    
-    @Column(name = "updated_at", nullable = false)
+
+    @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
-    
-    @Column(name = "patient_id", nullable = false)
-    private Long patientId;
-    
-    @Column(name = "doctor_id", nullable = false)
-    private Long doctorId;
 
     @PrePersist
     protected void onCreate() {

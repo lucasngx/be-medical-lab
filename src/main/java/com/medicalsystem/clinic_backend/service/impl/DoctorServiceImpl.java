@@ -8,6 +8,7 @@ import com.medicalsystem.clinic_backend.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DoctorServiceImpl implements DoctorService {
     private final DoctorRepository doctorRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public PaginatedResponse<Doctor> getAllDoctors(Pageable pageable) {
@@ -37,11 +39,17 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
+    public Doctor getDoctorByEmail(String email) {
+        return doctorRepository.findByEmail(email)
+            .orElseThrow(() -> new ResourceNotFoundException("Doctor not found with email: " + email));
+    }
+
+    @Override
     @Transactional
     public Doctor createDoctor(Doctor doctor) {
+        doctor.setPassword(passwordEncoder.encode(doctor.getPassword()));
         doctor.setCreatedAt(new Date());
         doctor.setUpdatedAt(new Date());
-        doctor.setStatus("ACTIVE");
         return doctorRepository.save(doctor);
     }
 
@@ -56,6 +64,7 @@ public class DoctorServiceImpl implements DoctorService {
         doctor.setPhone(doctorDetails.getPhone());
         doctor.setSpecialization(doctorDetails.getSpecialization());
         doctor.setLicenseNumber(doctorDetails.getLicenseNumber());
+        doctor.setStatus(doctorDetails.getStatus());
         doctor.setUpdatedAt(new Date());
 
         return doctorRepository.save(doctor);
@@ -69,8 +78,24 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public List<Doctor> searchDoctorsByName(String name) {
-        return doctorRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(name, name);
+    public PaginatedResponse<Doctor> searchDoctors(String firstName, String lastName, Pageable pageable) {
+        Page<Doctor> page;
+        if ((firstName != null && !firstName.isEmpty()) || (lastName != null && !lastName.isEmpty())) {
+            page = doctorRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
+                firstName != null ? firstName : "",
+                lastName != null ? lastName : "",
+                pageable
+            );
+        } else {
+            page = doctorRepository.findAll(pageable);
+        }
+        
+        return new PaginatedResponse<>(
+            page.getContent(),
+            page.getTotalElements(),
+            page.getNumber(),
+            page.getSize()
+        );
     }
 
     @Override
@@ -79,9 +104,8 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public Doctor getDoctorByEmail(String email) {
-        return doctorRepository.findByEmail(email)
-            .orElseThrow(() -> new ResourceNotFoundException("Doctor not found with email: " + email));
+    public List<Doctor> searchDoctorsByName(String name) {
+        return doctorRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(name, name);
     }
 
     @Override

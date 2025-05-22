@@ -8,6 +8,7 @@ import com.medicalsystem.clinic_backend.service.TechnicianService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TechnicianServiceImpl implements TechnicianService {
     private final TechnicianRepository technicianRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public PaginatedResponse<Technician> getAllTechnicians(Pageable pageable) {
@@ -45,6 +47,7 @@ public class TechnicianServiceImpl implements TechnicianService {
     @Override
     @Transactional
     public Technician createTechnician(Technician technician) {
+        technician.setPassword(passwordEncoder.encode(technician.getPassword()));
         technician.setCreatedAt(new Date());
         technician.setUpdatedAt(new Date());
         return technicianRepository.save(technician);
@@ -74,37 +77,38 @@ public class TechnicianServiceImpl implements TechnicianService {
     }
 
     @Override
+    public PaginatedResponse<Technician> searchTechnicians(String firstName, String lastName, Pageable pageable) {
+        Page<Technician> page;
+        if ((firstName != null && !firstName.isEmpty()) || (lastName != null && !lastName.isEmpty())) {
+            page = technicianRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
+                firstName != null ? firstName : "",
+                lastName != null ? lastName : "",
+                pageable
+            );
+        } else {
+            page = technicianRepository.findAll(pageable);
+        }
+        
+        return new PaginatedResponse<>(
+            page.getContent(),
+            page.getTotalElements(),
+            page.getNumber(),
+            page.getSize()
+        );
+    }
+
+    @Override
+    public List<Technician> searchTechniciansByName(String name) {
+        return technicianRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(name, name);
+    }
+
+    @Override
     public List<Technician> getTechniciansBySpecialization(String specialization) {
         return technicianRepository.findBySpecialization(specialization);
     }
 
     @Override
-    public PaginatedResponse<Technician> searchTechniciansByName(String name) {
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Technician> page = technicianRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(name, name, pageable);
-        return new PaginatedResponse<>(
-            page.getContent(),
-            page.getTotalElements(),
-            page.getNumber(),
-            page.getSize()
-        );
-    }
-
-    @Override
-    public PaginatedResponse<Technician> searchTechniciansBySpecialization(String specialization) {
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Technician> page = technicianRepository.findBySpecializationContainingIgnoreCase(specialization, pageable);
-        return new PaginatedResponse<>(
-            page.getContent(),
-            page.getTotalElements(),
-            page.getNumber(),
-            page.getSize()
-        );
-    }
-
-    @Override
     public Technician getById(Long id) {
-        return technicianRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Technician not found with id: " + id));
+        return getTechnicianById(id);
     }
 } 

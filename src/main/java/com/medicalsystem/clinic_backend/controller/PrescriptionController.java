@@ -4,52 +4,63 @@ import com.medicalsystem.clinic_backend.model.Prescription;
 import com.medicalsystem.clinic_backend.response.PaginatedResponse;
 import com.medicalsystem.clinic_backend.service.PrescriptionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/prescriptions")
 @RequiredArgsConstructor
 public class PrescriptionController {
-
     private final PrescriptionService prescriptionService;
 
     @GetMapping
     public ResponseEntity<PaginatedResponse<Prescription>> getAllPrescriptions(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int limit) {
-
-        PaginatedResponse<Prescription> response = prescriptionService.getPaginatedPrescriptions(page, limit);
-        return ResponseEntity.ok(response);
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(prescriptionService.getAllPrescriptions(PageRequest.of(page, size)));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Prescription> getPrescriptionById(@PathVariable Long id) {
-        Prescription prescription = prescriptionService.getPrescriptionById(id);
-        return ResponseEntity.ok(prescription);
+        return ResponseEntity.ok(prescriptionService.getPrescriptionById(id));
     }
 
     @GetMapping("/examination/{examinationId}")
     public ResponseEntity<Prescription> getPrescriptionByExaminationId(@PathVariable Long examinationId) {
-        Prescription prescription = prescriptionService.getPrescriptionByExaminationId(examinationId);
-        return ResponseEntity.ok(prescription);
+        return ResponseEntity.ok(prescriptionService.getPrescriptionByExaminationId(examinationId));
+    }
+
+    @GetMapping("/patient/{patientId}")
+    public ResponseEntity<List<Prescription>> getPrescriptionsByPatientId(@PathVariable Long patientId) {
+        return ResponseEntity.ok(prescriptionService.getPrescriptionsByPatientId(patientId));
+    }
+
+    @GetMapping("/doctor/{doctorId}")
+    public ResponseEntity<List<Prescription>> getPrescriptionsByDoctorId(@PathVariable Long doctorId) {
+        return ResponseEntity.ok(prescriptionService.getPrescriptionsByDoctorId(doctorId));
     }
 
     @PostMapping
-    public ResponseEntity<Prescription> createPrescription(@Valid @RequestBody Prescription prescription) {
-        Prescription created = prescriptionService.createPrescriptionWithItems(prescription);
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
+    public ResponseEntity<Prescription> createPrescription(@RequestBody Prescription prescription) {
+        return ResponseEntity.ok(prescriptionService.createPrescription(prescription));
+    }
+
+    @PostMapping("/with-items")
+    public ResponseEntity<Prescription> createPrescriptionWithItems(@RequestBody Prescription prescription) {
+        return ResponseEntity.ok(prescriptionService.createPrescriptionWithItems(prescription));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Prescription> updatePrescription(
-            @PathVariable Long id,
-            @Valid @RequestBody Prescription prescription) {
+    public ResponseEntity<Prescription> updatePrescription(@PathVariable Long id, @RequestBody Prescription prescription) {
+        return ResponseEntity.ok(prescriptionService.updatePrescription(id, prescription));
+    }
 
-        Prescription updated = prescriptionService.updatePrescription(id, prescription);
-        return ResponseEntity.ok(updated);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePrescription(@PathVariable Long id) {
+        prescriptionService.deletePrescription(id);
+        return ResponseEntity.ok().build();
     }
 }

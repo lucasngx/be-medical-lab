@@ -51,12 +51,11 @@ public class MedicationServiceImpl implements MedicationService {
 
         medication.setName(medicationDetails.getName());
         medication.setDescription(medicationDetails.getDescription());
+        medication.setCategory(medicationDetails.getCategory());
         medication.setDosage(medicationDetails.getDosage());
         medication.setFrequency(medicationDetails.getFrequency());
         medication.setDuration(medicationDetails.getDuration());
-        medication.setDosageInfo(medicationDetails.getDosageInfo());
-        medication.setSideEffects(medicationDetails.getSideEffects());
-        medication.setCategory(medicationDetails.getCategory());
+        medication.setInstructions(medicationDetails.getInstructions());
         medication.setUpdatedAt(new Date());
 
         return medicationRepository.save(medication);

@@ -23,10 +23,10 @@ public class Doctor implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(nullable = false)
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
     @Column(nullable = false, unique = true)
@@ -40,6 +40,12 @@ public class Doctor implements UserDetails {
 
     @Column(nullable = false)
     private String specialization;
+
+    @Column(name = "license_number", nullable = false, unique = true)
+    private String licenseNumber;
+
+    @Column(nullable = false)
+    private String status;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -1,12 +1,10 @@
 package com.medicalsystem.clinic_backend.controller;
 
 import com.medicalsystem.clinic_backend.model.Doctor;
-import com.medicalsystem.clinic_backend.model.Technician;
 import com.medicalsystem.clinic_backend.response.PaginatedResponse;
 import com.medicalsystem.clinic_backend.service.DoctorService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,17 +12,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/doctors")
+@RequiredArgsConstructor
 public class DoctorController {
     private final DoctorService doctorService;
 
-    @Autowired
-    public DoctorController(DoctorService doctorService) {
-        this.doctorService = doctorService;
-    }
-
     @GetMapping
-    public ResponseEntity<PaginatedResponse<Doctor>> getAllDoctors(Pageable pageable) {
-        return ResponseEntity.ok(doctorService.getAllDoctors(pageable));
+    public ResponseEntity<PaginatedResponse<Doctor>> getAllDoctors(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(doctorService.getAllDoctors(PageRequest.of(page, size)));
     }
 
     @GetMapping("/{id}")
@@ -34,15 +30,21 @@ public class DoctorController {
 
     @GetMapping("/search")
     public ResponseEntity<PaginatedResponse<Doctor>> searchDoctors(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String specialization,
-            Pageable pageable) {
-        return ResponseEntity.ok(doctorService.searchDoctors(name, specialization, pageable));
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(doctorService.searchDoctors(firstName, lastName, PageRequest.of(page, size)));
+    }
+
+    @GetMapping("/specialization/{specialization}")
+    public ResponseEntity<List<Doctor>> getDoctorsBySpecialization(@PathVariable String specialization) {
+        return ResponseEntity.ok(doctorService.getDoctorsBySpecialization(specialization));
     }
 
     @PostMapping
     public ResponseEntity<Doctor> createDoctor(@RequestBody Doctor doctor) {
-        return new ResponseEntity<>(doctorService.createDoctor(doctor), HttpStatus.CREATED);
+        return ResponseEntity.ok(doctorService.createDoctor(doctor));
     }
 
     @PutMapping("/{id}")

@@ -1,9 +1,11 @@
 package com.medicalsystem.clinic_backend.controller;
 
 import com.medicalsystem.clinic_backend.model.PrescriptionItem;
+import com.medicalsystem.clinic_backend.response.PaginatedResponse;
 import com.medicalsystem.clinic_backend.service.PrescriptionItemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,9 +19,10 @@ public class PrescriptionItemController {
     private final PrescriptionItemService prescriptionItemService;
 
     @GetMapping
-    public ResponseEntity<List<PrescriptionItem>> getAllPrescriptionItems() {
-        List<PrescriptionItem> result = prescriptionItemService.getAllPrescriptionItems();
-        return ResponseEntity.ok(result);
+    public ResponseEntity<PaginatedResponse<PrescriptionItem>> getAllPrescriptionItems(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(prescriptionItemService.getAllPrescriptionItems(PageRequest.of(page, size)));
     }
 
     @GetMapping("/{id}")
@@ -28,8 +31,8 @@ public class PrescriptionItemController {
         return ResponseEntity.ok(item);
     }
 
-    @GetMapping("/by-prescription/{prescriptionId}")
-    public ResponseEntity<List<PrescriptionItem>> getItemsByPrescriptionId(@PathVariable Long prescriptionId) {
+    @GetMapping("/prescription/{prescriptionId}")
+    public ResponseEntity<List<PrescriptionItem>> getPrescriptionItemsByPrescriptionId(@PathVariable Long prescriptionId) {
         List<PrescriptionItem> result = prescriptionItemService.getPrescriptionItemsByPrescriptionId(prescriptionId);
         return ResponseEntity.ok(result);
     }
@@ -51,6 +54,6 @@ public class PrescriptionItemController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePrescriptionItem(@PathVariable Long id) {
         prescriptionItemService.deletePrescriptionItem(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }

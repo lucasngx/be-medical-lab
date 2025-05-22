@@ -29,6 +29,9 @@ public class PrescriptionItem {
     @Column(nullable = false)
     private String duration;
 
+    @Column(length = 1000)
+    private String instructions;
+
     @ManyToOne
     @JoinColumn(name = "prescription_id", nullable = false)
     private Prescription prescription;

@@ -4,11 +4,10 @@ import com.medicalsystem.clinic_backend.model.Patient;
 import com.medicalsystem.clinic_backend.response.PaginatedResponse;
 import com.medicalsystem.clinic_backend.service.PatientService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -19,40 +18,36 @@ public class PatientController {
 
     @GetMapping
     public ResponseEntity<PaginatedResponse<Patient>> getAllPatients(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int limit) {
-
-        PaginatedResponse<Patient> response = patientService.getPaginatedPatients(page, limit);
-        return ResponseEntity.ok(response);
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(patientService.getAllPatients(PageRequest.of(page, size)));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Patient> getPatientById(@PathVariable Long id) {
-        Patient patient = patientService.getPatientById(id);
-        return ResponseEntity.ok(patient);
+        return ResponseEntity.ok(patientService.getPatientById(id));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Patient>> searchPatients(@RequestParam String name) {
-        List<Patient> patients = patientService.searchPatientsByName(name);
-        return ResponseEntity.ok(patients);
+    public ResponseEntity<List<Patient>> searchPatients(
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName) {
+        return ResponseEntity.ok(patientService.searchPatientsByName(firstName, lastName));
     }
 
     @PostMapping
-    public ResponseEntity<Patient> createPatient(@Valid @RequestBody Patient patient) {
-        Patient savedPatient = patientService.createPatient(patient);
-        return new ResponseEntity<>(savedPatient, HttpStatus.CREATED);
+    public ResponseEntity<Patient> createPatient(@RequestBody Patient patient) {
+        return ResponseEntity.ok(patientService.createPatient(patient));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Patient> updatePatient(@PathVariable Long id, @Valid @RequestBody Patient patient) {
-        Patient updatedPatient = patientService.updatePatient(id, patient);
-        return ResponseEntity.ok(updatedPatient);
+    public ResponseEntity<Patient> updatePatient(@PathVariable Long id, @RequestBody Patient patient) {
+        return ResponseEntity.ok(patientService.updatePatient(id, patient));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePatient(@PathVariable Long id) {
         patientService.deletePatient(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }

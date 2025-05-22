@@ -3,8 +3,8 @@ package com.medicalsystem.clinic_backend.controller;
 import com.medicalsystem.clinic_backend.model.LabTest;
 import com.medicalsystem.clinic_backend.response.PaginatedResponse;
 import com.medicalsystem.clinic_backend.service.LabTestService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,45 +14,38 @@ import java.util.List;
 @RequestMapping("/api/lab-tests")
 @RequiredArgsConstructor
 public class LabTestController {
-
     private final LabTestService labTestService;
 
     @GetMapping
     public ResponseEntity<PaginatedResponse<LabTest>> getAllLabTests(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int limit) {
-
-        PaginatedResponse<LabTest> response = labTestService.getPaginatedLabTests(page, limit);
-        return ResponseEntity.ok(response);
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(labTestService.getAllLabTests(PageRequest.of(page, size)));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LabTest> getLabTestById(@PathVariable Long id) {
-        LabTest labTest = labTestService.getLabTestById(id);
-        return ResponseEntity.ok(labTest);
+        return ResponseEntity.ok(labTestService.getLabTestById(id));
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<LabTest>> searchLabTestsByName(@RequestParam String name) {
-        List<LabTest> result = labTestService.searchLabTestsByName(name);
-        return ResponseEntity.ok(result);
+    @GetMapping("/patient/{patientId}")
+    public ResponseEntity<List<LabTest>> getLabTestsByPatientId(@PathVariable Long patientId) {
+        return ResponseEntity.ok(labTestService.getLabTestsByPatientId(patientId));
     }
 
     @PostMapping
-    public ResponseEntity<LabTest> createLabTest(@Valid @RequestBody LabTest labTest) {
-        LabTest created = labTestService.createLabTest(labTest);
-        return ResponseEntity.ok(created);
+    public ResponseEntity<LabTest> createLabTest(@RequestBody LabTest labTest) {
+        return ResponseEntity.ok(labTestService.createLabTest(labTest));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LabTest> updateLabTest(@PathVariable Long id, @Valid @RequestBody LabTest labTest) {
-        LabTest updated = labTestService.updateLabTest(id, labTest);
-        return ResponseEntity.ok(updated);
+    public ResponseEntity<LabTest> updateLabTest(@PathVariable Long id, @RequestBody LabTest labTest) {
+        return ResponseEntity.ok(labTestService.updateLabTest(id, labTest));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLabTest(@PathVariable Long id) {
         labTestService.deleteLabTest(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }

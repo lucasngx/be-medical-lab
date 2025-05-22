@@ -5,6 +5,7 @@ import com.medicalsystem.clinic_backend.model.Medication;
 import com.medicalsystem.clinic_backend.response.PaginatedResponse;
 import com.medicalsystem.clinic_backend.service.MedicationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,11 +20,9 @@ public class MedicationController {
 
     @GetMapping
     public ResponseEntity<PaginatedResponse<Medication>> getAllMedications(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int limit) {
-
-        PaginatedResponse<Medication> response = medicationService.getPaginatedMedications(page, limit);
-        return ResponseEntity.ok(response);
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(medicationService.getAllMedications(PageRequest.of(page, size)));
     }
 
     @GetMapping("/{id}")
@@ -38,19 +37,22 @@ public class MedicationController {
 
     @PostMapping
     public ResponseEntity<Medication> createMedication(@RequestBody Medication medication) {
-        Medication createdMedication = medicationService.createMedication(medication);
-        return ResponseEntity.ok(createdMedication);
+        return ResponseEntity.ok(medicationService.createMedication(medication));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Medication> updateMedication(@PathVariable Long id, @RequestBody Medication medication) {
-        Medication updatedMedication = medicationService.updateMedication(id, medication);
-        return ResponseEntity.ok(updatedMedication);
+        return ResponseEntity.ok(medicationService.updateMedication(id, medication));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMedication(@PathVariable Long id) {
         medicationService.deleteMedication(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/category/{category}")
+    public ResponseEntity<List<Medication>> getMedicationsByCategory(@PathVariable String category) {
+        return ResponseEntity.ok(medicationService.getMedicationsByCategory(category));
     }
 }
