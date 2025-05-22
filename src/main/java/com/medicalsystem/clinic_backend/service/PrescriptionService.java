@@ -4,7 +4,7 @@ import com.medicalsystem.clinic_backend.exception.ResourceNotFoundException;
 import com.medicalsystem.clinic_backend.model.Examination;
 import com.medicalsystem.clinic_backend.model.Prescription;
 import com.medicalsystem.clinic_backend.model.PrescriptionItem;
-import com.medicalsystem.clinic_backend.model.enums.ExamStatus;
+import com.medicalsystem.clinic_backend.model.enums.ExaminationStatus;
 import com.medicalsystem.clinic_backend.repository.PrescriptionRepository;
 import com.medicalsystem.clinic_backend.response.PaginatedResponse;
 import lombok.RequiredArgsConstructor;
@@ -49,11 +49,11 @@ public class PrescriptionService {
     public Prescription createPrescriptionWithItems(Prescription prescription) {
         // Get and update examination
         Examination examination = examinationService.getExaminationById(prescription.getExaminationId());
-        examinationService.updateExaminationStatus(examination.getId(), ExamStatus.COMPLETED);
+        examinationService.updateExaminationStatus(examination.getId(), ExaminationStatus.COMPLETED);
 
-        // Set back-references for prescription items
+        // Set prescriptionId for prescription items
         if (prescription.getPrescriptionItems() != null) {
-            prescription.getPrescriptionItems().forEach(item -> item.setPrescription(prescription));
+            prescription.getPrescriptionItems().forEach(item -> item.setPrescriptionId(prescription.getId()));
         }
 
         // Save and return
@@ -65,5 +65,30 @@ public class PrescriptionService {
         prescription.setDiagnosis(prescriptionDetails.getDiagnosis());
         prescription.setNotes(prescriptionDetails.getNotes());
         return prescriptionRepository.save(prescription);
+    }
+
+    public PaginatedResponse<Prescription> getAllPrescriptions(Pageable pageable) {
+        // Implementation needed
+        throw new UnsupportedOperationException("Method getAllPrescriptions not implemented");
+    }
+
+    public Prescription createPrescription(Prescription prescription) {
+        // Implementation needed
+        throw new UnsupportedOperationException("Method createPrescription not implemented");
+    }
+
+    public void deletePrescription(Long id) {
+        // Implementation needed
+        throw new UnsupportedOperationException("Method deletePrescription not implemented");
+    }
+
+    public List<Prescription> getPrescriptionsByPatientId(Long patientId) {
+        // Implementation needed
+        throw new UnsupportedOperationException("Method getPrescriptionsByPatientId not implemented");
+    }
+
+    public List<Prescription> getPrescriptionsByDoctorId(Long doctorId) {
+        // Implementation needed
+        throw new UnsupportedOperationException("Method getPrescriptionsByDoctorId not implemented");
     }
 }

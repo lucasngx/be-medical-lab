@@ -4,6 +4,7 @@ import com.medicalsystem.clinic_backend.model.Doctor;
 import com.medicalsystem.clinic_backend.model.Technician;
 import com.medicalsystem.clinic_backend.repository.DoctorRepository;
 import com.medicalsystem.clinic_backend.repository.TechnicianRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final DoctorRepository doctorRepository;
     private final TechnicianRepository technicianRepository;
 
+    @Autowired
     public CustomUserDetailsService(DoctorRepository doctorRepository, TechnicianRepository technicianRepository) {
         this.doctorRepository = doctorRepository;
         this.technicianRepository = technicianRepository;
@@ -27,7 +29,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         // Try to find a doctor first
-        Doctor doctor = doctorRepository.findByEmail(email);
+        Doctor doctor = doctorRepository.findByEmail(email)
+            .orElse(null);
+        
         if (doctor != null) {
             return new User(
                 doctor.getEmail(),
@@ -37,15 +41,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
 
         // If not a doctor, try to find a technician
-        Technician technician = technicianRepository.findByEmail(email);
-        if (technician != null) {
-            return new User(
-                technician.getEmail(),
-                technician.getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + technician.getRole().name()))
-            );
-        }
+        Technician technician = technicianRepository.findByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-        throw new UsernameNotFoundException("User not found with email: " + email);
+        return new User(
+            technician.getEmail(),
+            technician.getPassword(),
+            Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + technician.getRole().name()))
+        );
     }
 } 

@@ -15,11 +15,13 @@ public class ExaminationResponse {
     private Date updatedAt;
     private Patient patient;
     private Doctor doctor;
+    private Long patientId;
+    private Long doctorId;
 
     public ExaminationResponse() {
     }
 
-    public ExaminationResponse(Long id, Date examinationDate, String symptoms, ExaminationStatus status, Date createdAt, Date updatedAt, Patient patient, Doctor doctor) {
+    public ExaminationResponse(Long id, Date examinationDate, String symptoms, ExaminationStatus status, Date createdAt, Date updatedAt, Patient patient, Doctor doctor, Long patientId, Long doctorId) {
         this.id = id;
         this.examinationDate = examinationDate;
         this.symptoms = symptoms;
@@ -28,6 +30,8 @@ public class ExaminationResponse {
         this.updatedAt = updatedAt;
         this.patient = patient;
         this.doctor = doctor;
+        this.patientId = patientId;
+        this.doctorId = doctorId;
     }
 
     public Long getId() {
@@ -92,5 +96,21 @@ public class ExaminationResponse {
 
     public void setDoctor(Doctor doctor) {
         this.doctor = doctor;
+    }
+
+    public Long getPatientId() {
+        return patientId;
+    }
+
+    public void setPatientId(Long patientId) {
+        this.patientId = patientId;
+    }
+
+    public Long getDoctorId() {
+        return doctorId;
+    }
+
+    public void setDoctorId(Long doctorId) {
+        this.doctorId = doctorId;
     }
 }

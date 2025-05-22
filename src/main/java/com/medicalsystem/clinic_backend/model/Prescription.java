@@ -1,83 +1,61 @@
 package com.medicalsystem.clinic_backend.model;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 
+@Entity
+@Table(name = "prescriptions")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Prescription {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String diagnosis;
+
+    @Column(name = "prescription_date", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date prescriptionDate;
+
+    @Column(columnDefinition = "TEXT")
     private String notes;
-    private List<PrescriptionItem> prescriptionItems;
+
+    @Column(name = "created_at", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
-    public Prescription() {
+    @Column(name = "examination_id", nullable = false)
+    private Long examinationId;
+
+    @Column(name = "patient_id", nullable = false)
+    private Long patientId;
+
+    @Column(name = "doctor_id", nullable = false)
+    private Long doctorId;
+
+    @OneToMany(mappedBy = "prescription", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PrescriptionItem> items = new ArrayList<>();
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = new Date();
+        updatedAt = new Date();
     }
 
-    public Prescription(Long id, String diagnosis, Date prescriptionDate, String notes, List<PrescriptionItem> prescriptionItems, Date createdAt, Date updatedAt) {
-        this.id = id;
-        this.diagnosis = diagnosis;
-        this.prescriptionDate = prescriptionDate;
-        this.notes = notes;
-        this.prescriptionItems = prescriptionItems;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getDiagnosis() {
-        return diagnosis;
-    }
-
-    public void setDiagnosis(String diagnosis) {
-        this.diagnosis = diagnosis;
-    }
-
-    public Date getPrescriptionDate() {
-        return prescriptionDate;
-    }
-
-    public void setPrescriptionDate(Date prescriptionDate) {
-        this.prescriptionDate = prescriptionDate;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public List<PrescriptionItem> getPrescriptionItems() {
-        return prescriptionItems;
-    }
-
-    public void setPrescriptionItems(List<PrescriptionItem> prescriptionItems) {
-        this.prescriptionItems = prescriptionItems;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = new Date();
     }
 }

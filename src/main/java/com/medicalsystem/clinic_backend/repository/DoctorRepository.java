@@ -13,7 +13,8 @@ import java.util.Optional;
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     Optional<Doctor> findByEmail(String email);
     List<Doctor> findBySpecialization(String specialization);
-    Page<Doctor> findByNameContainingIgnoreCase(String name, Pageable pageable);
+    Page<Doctor> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(String firstName, String lastName, Pageable pageable);
     Page<Doctor> findBySpecializationContainingIgnoreCase(String specialization, Pageable pageable);
-    Page<Doctor> findByNameContainingIgnoreCaseAndSpecializationContainingIgnoreCase(String name, String specialization, Pageable pageable);
+    Page<Doctor> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseAndSpecializationContainingIgnoreCase(String firstName, String lastName, String specialization, Pageable pageable);
+    List<Doctor> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(String firstName, String lastName);
 }

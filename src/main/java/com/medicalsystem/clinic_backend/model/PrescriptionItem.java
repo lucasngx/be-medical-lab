@@ -1,74 +1,54 @@
 package com.medicalsystem.clinic_backend.model;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
+@Entity
+@Table(name = "prescription_items")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class PrescriptionItem {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "medication_name", nullable = false)
     private String medicationName;
+
+    @Column(nullable = false)
     private String dosage;
+
+    @Column(nullable = false)
     private String frequency;
+
+    @Column(nullable = false)
     private String duration;
+
+    @ManyToOne
+    @JoinColumn(name = "prescription_id", nullable = false)
     private Prescription prescription;
 
-    public PrescriptionItem() {
+    @Column(name = "created_at", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = new Date();
+        updatedAt = new Date();
     }
 
-    public PrescriptionItem(Long id, String medicationName, String dosage, String frequency, String duration, Prescription prescription) {
-        this.id = id;
-        this.medicationName = medicationName;
-        this.dosage = dosage;
-        this.frequency = frequency;
-        this.duration = duration;
-        this.prescription = prescription;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getMedicationName() {
-        return medicationName;
-    }
-
-    public void setMedicationName(String medicationName) {
-        this.medicationName = medicationName;
-    }
-
-    public String getDosage() {
-        return dosage;
-    }
-
-    public void setDosage(String dosage) {
-        this.dosage = dosage;
-    }
-
-    public String getFrequency() {
-        return frequency;
-    }
-
-    public void setFrequency(String frequency) {
-        this.frequency = frequency;
-    }
-
-    public String getDuration() {
-        return duration;
-    }
-
-    public void setDuration(String duration) {
-        this.duration = duration;
-    }
-
-    public Prescription getPrescription() {
-        return prescription;
-    }
-
-    public void setPrescription(Prescription prescription) {
-        this.prescription = prescription;
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = new Date();
     }
 }

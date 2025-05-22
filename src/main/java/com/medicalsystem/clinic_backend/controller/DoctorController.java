@@ -4,7 +4,8 @@ import com.medicalsystem.clinic_backend.model.Doctor;
 import com.medicalsystem.clinic_backend.model.Technician;
 import com.medicalsystem.clinic_backend.response.PaginatedResponse;
 import com.medicalsystem.clinic_backend.service.DoctorService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,19 +14,18 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/doctors")
-@RequiredArgsConstructor
 public class DoctorController {
     private final DoctorService doctorService;
 
-    @GetMapping
-    public ResponseEntity<PaginatedResponse<Doctor>> getAllDoctors(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int limit) {
-
-        PaginatedResponse<Doctor> response = doctorService.getPaginatedDoctors(page, limit);
-        return ResponseEntity.ok(response);
+    @Autowired
+    public DoctorController(DoctorService doctorService) {
+        this.doctorService = doctorService;
     }
 
+    @GetMapping
+    public ResponseEntity<PaginatedResponse<Doctor>> getAllDoctors(Pageable pageable) {
+        return ResponseEntity.ok(doctorService.getAllDoctors(pageable));
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Doctor> getDoctorById(@PathVariable Long id) {
@@ -35,15 +35,9 @@ public class DoctorController {
     @GetMapping("/search")
     public ResponseEntity<PaginatedResponse<Doctor>> searchDoctors(
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) String specialization) {
-
-        if (name != null && !name.isEmpty()) {
-            return ResponseEntity.ok(doctorService.searchDoctorsByName(name));
-        } else if (specialization != null && !specialization.isEmpty()) {
-            return ResponseEntity.ok(doctorService.searchDoctorsBySpecialization(specialization));
-        } else {
-            return ResponseEntity.ok(doctorService.getPaginatedDoctors(1, 10));
-        }
+            @RequestParam(required = false) String specialization,
+            Pageable pageable) {
+        return ResponseEntity.ok(doctorService.searchDoctors(name, specialization, pageable));
     }
 
     @PostMapping
@@ -52,13 +46,13 @@ public class DoctorController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Doctor> updateDoctor(@PathVariable Long id, @RequestBody Doctor doctorDetails) {
-        return ResponseEntity.ok(doctorService.updateDoctor(id, doctorDetails));
+    public ResponseEntity<Doctor> updateDoctor(@PathVariable Long id, @RequestBody Doctor doctor) {
+        return ResponseEntity.ok(doctorService.updateDoctor(id, doctor));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDoctor(@PathVariable Long id) {
         doctorService.deleteDoctor(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }

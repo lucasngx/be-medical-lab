@@ -1,62 +1,42 @@
 package com.medicalsystem.clinic_backend.response;
 
+import lombok.Data;
 import java.util.List;
 
+@Data
 public class PaginatedResponse<T> {
     private List<T> data;
-    private int currentPage;
+    private long total;
+    private int page;
+    private int limit;
     private int totalPages;
-    private long totalItems;
-    private int pageSize;
+
+    public PaginatedResponse(List<T> data, long total, int page, int limit) {
+        this.data = data;
+        this.total = total;
+        this.page = page;
+        this.limit = limit;
+        this.totalPages = (int) Math.ceil((double) total / limit);
+    }
 
     public PaginatedResponse() {
-    }
-
-    public PaginatedResponse(List<T> data, int currentPage, int totalPages, long totalItems, int pageSize) {
-        this.data = data;
-        this.currentPage = currentPage;
-        this.totalPages = totalPages;
-        this.totalItems = totalItems;
-        this.pageSize = pageSize;
-    }
-
-    public List<T> getData() {
-        return data;
     }
 
     public void setData(List<T> data) {
         this.data = data;
     }
 
-    public int getCurrentPage() {
-        return currentPage;
+    public void setTotal(long total) {
+        this.total = total;
+        this.totalPages = (int) Math.ceil((double) total / limit);
     }
 
-    public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
+    public void setPage(int page) {
+        this.page = page;
     }
 
-    public int getTotalPages() {
-        return totalPages;
-    }
-
-    public void setTotalPages(int totalPages) {
-        this.totalPages = totalPages;
-    }
-
-    public long getTotalItems() {
-        return totalItems;
-    }
-
-    public void setTotalItems(long totalItems) {
-        this.totalItems = totalItems;
-    }
-
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
+    public void setLimit(int limit) {
+        this.limit = limit;
+        this.totalPages = (int) Math.ceil((double) total / limit);
     }
 }

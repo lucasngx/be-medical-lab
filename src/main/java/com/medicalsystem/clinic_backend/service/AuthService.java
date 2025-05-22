@@ -7,32 +7,24 @@ import com.medicalsystem.clinic_backend.model.Technician;
 import com.medicalsystem.clinic_backend.repository.DoctorRepository;
 import com.medicalsystem.clinic_backend.repository.TechnicianRepository;
 import com.medicalsystem.clinic_backend.security.JwtTokenUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
     private final DoctorRepository doctorRepository;
     private final TechnicianRepository technicianRepository;
-
-    public AuthService(AuthenticationManager authenticationManager,
-                      UserDetailsService userDetailsService,
-                      JwtTokenUtil jwtTokenUtil,
-                      DoctorRepository doctorRepository,
-                      TechnicianRepository technicianRepository) {
-        this.authenticationManager = authenticationManager;
-        this.userDetailsService = userDetailsService;
-        this.jwtTokenUtil = jwtTokenUtil;
-        this.doctorRepository = doctorRepository;
-        this.technicianRepository = technicianRepository;
-    }
+    private final PasswordEncoder passwordEncoder;
 
     public AuthResponse login(AuthRequest request) {
         Authentication authentication = authenticationManager.authenticate(
@@ -43,13 +35,45 @@ public class AuthService {
         String token = jwtTokenUtil.generateToken(userDetails);
         
         // Check if user is a doctor
-        Doctor doctor = doctorRepository.findByEmail(request.getEmail());
+        Doctor doctor = doctorRepository.findByEmail(request.getEmail()).orElse(null);
         if (doctor != null) {
+            if (!passwordEncoder.matches(request.getPassword(), doctor.getPassword())) {
+                throw new RuntimeException("Invalid password");
+            }
             return new AuthResponse(token, doctor.getEmail(), doctor.getRole());
         }
         
-        // If not a doctor, must be a technician
-        Technician technician = technicianRepository.findByEmail(request.getEmail());
-        return new AuthResponse(token, technician.getEmail(), technician.getRole());
+        // Check if user is a technician
+        Technician technician = technicianRepository.findByEmail(request.getEmail()).orElse(null);
+        if (technician != null) {
+            if (!passwordEncoder.matches(request.getPassword(), technician.getPassword())) {
+                throw new RuntimeException("Invalid password");
+            }
+            return new AuthResponse(token, technician.getEmail(), technician.getRole());
+        }
+        
+        throw new RuntimeException("User not found");
+    }
+
+    public Doctor authenticateDoctor(String email, String password) {
+        Doctor doctor = doctorRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Doctor not found"));
+        
+        if (!passwordEncoder.matches(password, doctor.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
+        
+        return doctor;
+    }
+
+    public Technician authenticateTechnician(String email, String password) {
+        Technician technician = technicianRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Technician not found"));
+        
+        if (!passwordEncoder.matches(password, technician.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
+        
+        return technician;
     }
 } 

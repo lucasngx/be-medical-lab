@@ -1,94 +1,56 @@
 package com.medicalsystem.clinic_backend.model;
 
 import com.medicalsystem.clinic_backend.model.enums.ExaminationStatus;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+@Entity
+@Table(name = "examinations")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Examination {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    @Column(name = "examination_date", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date examinationDate;
+    
+    @Column(nullable = false)
     private String symptoms;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ExaminationStatus status;
+    
+    @Column(name = "created_at", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+    
+    @Column(name = "updated_at", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
-    private Patient patient;
-    private Doctor doctor;
+    
+    @Column(name = "patient_id", nullable = false)
+    private Long patientId;
+    
+    @Column(name = "doctor_id", nullable = false)
+    private Long doctorId;
 
-    public Examination() {
+    @PrePersist
+    protected void onCreate() {
+        createdAt = new Date();
+        updatedAt = new Date();
     }
 
-    public Examination(Long id, Date examinationDate, String symptoms, ExaminationStatus status, Date createdAt, Date updatedAt, Patient patient, Doctor doctor) {
-        this.id = id;
-        this.examinationDate = examinationDate;
-        this.symptoms = symptoms;
-        this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.patient = patient;
-        this.doctor = doctor;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Date getExaminationDate() {
-        return examinationDate;
-    }
-
-    public void setExaminationDate(Date examinationDate) {
-        this.examinationDate = examinationDate;
-    }
-
-    public String getSymptoms() {
-        return symptoms;
-    }
-
-    public void setSymptoms(String symptoms) {
-        this.symptoms = symptoms;
-    }
-
-    public ExaminationStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ExaminationStatus status) {
-        this.status = status;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Patient getPatient() {
-        return patient;
-    }
-
-    public void setPatient(Patient patient) {
-        this.patient = patient;
-    }
-
-    public Doctor getDoctor() {
-        return doctor;
-    }
-
-    public void setDoctor(Doctor doctor) {
-        this.doctor = doctor;
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = new Date();
     }
 }
