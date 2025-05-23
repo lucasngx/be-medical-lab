@@ -30,9 +30,8 @@ public class PatientController {
 
     @GetMapping("/search")
     public ResponseEntity<List<Patient>> searchPatients(
-            @RequestParam(required = false) String firstName,
-            @RequestParam(required = false) String lastName) {
-        return ResponseEntity.ok(patientService.searchPatientsByName(firstName, lastName));
+            @RequestParam(required = false) String name) {
+        return ResponseEntity.ok(patientService.searchPatientsByName(name));
     }
 
     @PostMapping

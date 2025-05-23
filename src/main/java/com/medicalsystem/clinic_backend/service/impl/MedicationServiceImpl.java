@@ -48,16 +48,12 @@ public class MedicationServiceImpl implements MedicationService {
     @Transactional
     public Medication updateMedication(Long id, Medication medicationDetails) {
         Medication medication = getMedicationById(id);
-
+        
         medication.setName(medicationDetails.getName());
-        medication.setDescription(medicationDetails.getDescription());
-        medication.setCategory(medicationDetails.getCategory());
-        medication.setDosage(medicationDetails.getDosage());
-        medication.setFrequency(medicationDetails.getFrequency());
-        medication.setDuration(medicationDetails.getDuration());
-        medication.setInstructions(medicationDetails.getInstructions());
+        medication.setDosageInfo(medicationDetails.getDosageInfo());
+        medication.setSideEffects(medicationDetails.getSideEffects());
         medication.setUpdatedAt(new Date());
-
+        
         return medicationRepository.save(medication);
     }
 

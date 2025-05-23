@@ -8,7 +8,6 @@ import com.medicalsystem.clinic_backend.service.PatientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PatientServiceImpl implements PatientService {
     private final PatientRepository patientRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Override
     public PaginatedResponse<Patient> getAllPatients(Pageable pageable) {
@@ -47,7 +45,6 @@ public class PatientServiceImpl implements PatientService {
     @Override
     @Transactional
     public Patient createPatient(Patient patient) {
-        patient.setPassword(passwordEncoder.encode(patient.getPassword()));
         patient.setCreatedAt(new Date());
         patient.setUpdatedAt(new Date());
         return patientRepository.save(patient);
@@ -57,17 +54,15 @@ public class PatientServiceImpl implements PatientService {
     @Transactional
     public Patient updatePatient(Long id, Patient patientDetails) {
         Patient patient = getPatientById(id);
-
-        patient.setFirstName(patientDetails.getFirstName());
-        patient.setLastName(patientDetails.getLastName());
+        
+        patient.setName(patientDetails.getName());
         patient.setEmail(patientDetails.getEmail());
         patient.setPhone(patientDetails.getPhone());
-        patient.setDateOfBirth(patientDetails.getDateOfBirth());
+        patient.setDob(patientDetails.getDob());
         patient.setGender(patientDetails.getGender());
         patient.setAddress(patientDetails.getAddress());
-        patient.setStatus(patientDetails.getStatus());
         patient.setUpdatedAt(new Date());
-
+        
         return patientRepository.save(patient);
     }
 
@@ -79,11 +74,8 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public List<Patient> searchPatientsByName(String firstName, String lastName) {
-        return patientRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
-            firstName != null ? firstName : "",
-            lastName != null ? lastName : ""
-        );
+    public List<Patient> searchPatientsByName(String name) {
+        return patientRepository.findByNameContainingIgnoreCase(name);
     }
 
     @Override

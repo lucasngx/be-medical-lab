@@ -25,8 +25,7 @@ public interface AssignedTestRepository extends JpaRepository<AssignedTest, Long
     List<AssignedTest> findByTechnicianId(@Param("technicianId") Long technicianId);
 
     @Query("SELECT at FROM AssignedTest at WHERE " +
-           "(:searchTerm IS NULL OR LOWER(at.examination.patient.firstName) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-           "LOWER(at.examination.patient.lastName) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+           "(:searchTerm IS NULL OR LOWER(at.examination.patient.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
            "LOWER(at.labTest.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))) AND " +
            "(:status IS NULL OR at.status = :status)")
     Page<AssignedTest> searchAssignedTests(

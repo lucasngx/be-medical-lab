@@ -27,4 +27,8 @@ public interface TechnicianRepository extends JpaRepository<Technician, Long> {
     List<Technician> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(String firstName, String lastName);
     
     List<Technician> findBySpecialization(String specialization);
+
+    List<Technician> findByUser_NameContainingIgnoreCase(String name);
+
+    List<Technician> findByDepartment(String department);
 }

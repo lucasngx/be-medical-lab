@@ -2,7 +2,9 @@ package com.medicalsystem.clinic_backend.service.impl;
 
 import com.medicalsystem.clinic_backend.exception.ResourceNotFoundException;
 import com.medicalsystem.clinic_backend.model.Doctor;
+import com.medicalsystem.clinic_backend.model.User;
 import com.medicalsystem.clinic_backend.repository.DoctorRepository;
+import com.medicalsystem.clinic_backend.repository.UserRepository;
 import com.medicalsystem.clinic_backend.response.PaginatedResponse;
 import com.medicalsystem.clinic_backend.service.DoctorService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DoctorServiceImpl implements DoctorService {
     private final DoctorRepository doctorRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -47,9 +50,22 @@ public class DoctorServiceImpl implements DoctorService {
     @Override
     @Transactional
     public Doctor createDoctor(Doctor doctor) {
-        doctor.setPassword(passwordEncoder.encode(doctor.getPassword()));
+        // Create user first
+        User user = new User();
+        user.setEmail(doctor.getEmail());
+        user.setPassword(passwordEncoder.encode(doctor.getUser().getPassword()));
+        user.setName(doctor.getUser().getName());
+        user.setRole(doctor.getUser().getRole());
+        user.setEnabled(true);
+        user.setCreatedAt(new Date());
+        user.setUpdatedAt(new Date());
+        user = userRepository.save(user);
+
+        // Set user to doctor
+        doctor.setUser(user);
         doctor.setCreatedAt(new Date());
         doctor.setUpdatedAt(new Date());
+        
         return doctorRepository.save(doctor);
     }
 
@@ -57,16 +73,20 @@ public class DoctorServiceImpl implements DoctorService {
     @Transactional
     public Doctor updateDoctor(Long id, Doctor doctorDetails) {
         Doctor doctor = getDoctorById(id);
+        
+        // Update user details
+        User user = doctor.getUser();
+        user.setName(doctorDetails.getUser().getName());
+        user.setEmail(doctorDetails.getEmail());
+        user.setUpdatedAt(new Date());
+        userRepository.save(user);
 
-        doctor.setFirstName(doctorDetails.getFirstName());
-        doctor.setLastName(doctorDetails.getLastName());
-        doctor.setEmail(doctorDetails.getEmail());
-        doctor.setPhone(doctorDetails.getPhone());
+        // Update doctor details
         doctor.setSpecialization(doctorDetails.getSpecialization());
-        doctor.setLicenseNumber(doctorDetails.getLicenseNumber());
-        doctor.setStatus(doctorDetails.getStatus());
+        doctor.setPhone(doctorDetails.getPhone());
+        doctor.setEmail(doctorDetails.getEmail());
         doctor.setUpdatedAt(new Date());
-
+        
         return doctorRepository.save(doctor);
     }
 
@@ -75,6 +95,7 @@ public class DoctorServiceImpl implements DoctorService {
     public void deleteDoctor(Long id) {
         Doctor doctor = getDoctorById(id);
         doctorRepository.delete(doctor);
+        userRepository.delete(doctor.getUser());
     }
 
     @Override
@@ -105,7 +126,7 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public List<Doctor> searchDoctorsByName(String name) {
-        return doctorRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(name, name);
+        return doctorRepository.findByUser_NameContainingIgnoreCase(name);
     }
 
     @Override

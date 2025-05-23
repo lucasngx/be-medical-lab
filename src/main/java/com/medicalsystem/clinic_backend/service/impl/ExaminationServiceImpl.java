@@ -116,9 +116,9 @@ public class ExaminationServiceImpl implements ExaminationService {
     public PaginatedResponse<Examination> searchExaminations(String patientName, ExaminationStatus status, Pageable pageable) {
         Page<Examination> page;
         if (patientName != null && !patientName.isEmpty() && status != null) {
-            page = examinationRepository.findByPatientFirstNameContainingIgnoreCaseAndStatus(patientName, status, pageable);
+            page = examinationRepository.findByPatientNameContainingIgnoreCaseAndStatus(patientName, status, pageable);
         } else if (patientName != null && !patientName.isEmpty()) {
-            page = examinationRepository.findByPatientFirstNameContainingIgnoreCase(patientName, pageable);
+            page = examinationRepository.findByPatientNameContainingIgnoreCase(patientName, pageable);
         } else if (status != null) {
             page = examinationRepository.findByStatus(status, pageable);
         } else {

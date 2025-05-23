@@ -13,6 +13,6 @@ public interface PatientService {
     Patient createPatient(Patient patient);
     Patient updatePatient(Long id, Patient patientDetails);
     void deletePatient(Long id);
-    List<Patient> searchPatientsByName(String firstName, String lastName);
+    List<Patient> searchPatientsByName(String name);
     Patient getById(Long id);
 }

@@ -2,7 +2,9 @@ package com.medicalsystem.clinic_backend.service.impl;
 
 import com.medicalsystem.clinic_backend.exception.ResourceNotFoundException;
 import com.medicalsystem.clinic_backend.model.Technician;
+import com.medicalsystem.clinic_backend.model.User;
 import com.medicalsystem.clinic_backend.repository.TechnicianRepository;
+import com.medicalsystem.clinic_backend.repository.UserRepository;
 import com.medicalsystem.clinic_backend.response.PaginatedResponse;
 import com.medicalsystem.clinic_backend.service.TechnicianService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TechnicianServiceImpl implements TechnicianService {
     private final TechnicianRepository technicianRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -47,9 +50,22 @@ public class TechnicianServiceImpl implements TechnicianService {
     @Override
     @Transactional
     public Technician createTechnician(Technician technician) {
-        technician.setPassword(passwordEncoder.encode(technician.getPassword()));
+        // Create user first
+        User user = new User();
+        user.setEmail(technician.getEmail());
+        user.setPassword(passwordEncoder.encode(technician.getUser().getPassword()));
+        user.setName(technician.getUser().getName());
+        user.setRole(technician.getUser().getRole());
+        user.setEnabled(true);
+        user.setCreatedAt(new Date());
+        user.setUpdatedAt(new Date());
+        user = userRepository.save(user);
+
+        // Set user to technician
+        technician.setUser(user);
         technician.setCreatedAt(new Date());
         technician.setUpdatedAt(new Date());
+        
         return technicianRepository.save(technician);
     }
 
@@ -57,15 +73,20 @@ public class TechnicianServiceImpl implements TechnicianService {
     @Transactional
     public Technician updateTechnician(Long id, Technician technicianDetails) {
         Technician technician = getTechnicianById(id);
+        
+        // Update user details
+        User user = technician.getUser();
+        user.setName(technicianDetails.getUser().getName());
+        user.setEmail(technicianDetails.getEmail());
+        user.setUpdatedAt(new Date());
+        userRepository.save(user);
 
-        technician.setFirstName(technicianDetails.getFirstName());
-        technician.setLastName(technicianDetails.getLastName());
-        technician.setEmail(technicianDetails.getEmail());
+        // Update technician details
+        technician.setDepartment(technicianDetails.getDepartment());
         technician.setPhone(technicianDetails.getPhone());
-        technician.setSpecialization(technicianDetails.getSpecialization());
-        technician.setStatus(technicianDetails.getStatus());
+        technician.setEmail(technicianDetails.getEmail());
         technician.setUpdatedAt(new Date());
-
+        
         return technicianRepository.save(technician);
     }
 
@@ -74,6 +95,7 @@ public class TechnicianServiceImpl implements TechnicianService {
     public void deleteTechnician(Long id) {
         Technician technician = getTechnicianById(id);
         technicianRepository.delete(technician);
+        userRepository.delete(technician.getUser());
     }
 
     @Override
@@ -99,7 +121,7 @@ public class TechnicianServiceImpl implements TechnicianService {
 
     @Override
     public List<Technician> searchTechniciansByName(String name) {
-        return technicianRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(name, name);
+        return technicianRepository.findByUser_NameContainingIgnoreCase(name);
     }
 
     @Override

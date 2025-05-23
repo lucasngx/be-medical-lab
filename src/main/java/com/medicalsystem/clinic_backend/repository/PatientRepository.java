@@ -13,6 +13,6 @@ import java.util.Optional;
 public interface PatientRepository extends JpaRepository<Patient, Long> {
     Optional<Patient> findByEmail(String email);
     Optional<Patient> findByPhone(String phone);
-    List<Patient> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(String firstName, String lastName);
-    Page<Patient> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(String firstName, String lastName, Pageable pageable);
+    List<Patient> findByNameContainingIgnoreCase(String name);
+    Page<Patient> findByNameContainingIgnoreCase(String name, Pageable pageable);
 }

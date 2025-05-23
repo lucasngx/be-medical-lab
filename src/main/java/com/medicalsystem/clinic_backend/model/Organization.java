@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 @Entity
-@Table(name = "medications")
+@Table(name = "organizations")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Medication {
+public class Organization {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,11 +19,14 @@ public class Medication {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "dosage_info", nullable = false)
-    private String dosageInfo;
+    @Column(nullable = false)
+    private String address;
 
-    @Column(name = "side_effects")
-    private String sideEffects;
+    @Column(nullable = false)
+    private String phone;
+
+    @Column(nullable = false)
+    private String email;
 
     @Column(name = "created_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -43,4 +46,4 @@ public class Medication {
     protected void onUpdate() {
         updatedAt = new Date();
     }
-}
+} 

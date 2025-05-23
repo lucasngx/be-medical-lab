@@ -17,38 +17,29 @@ public class Patient {
     private Long id;
 
     @Column(nullable = false)
-    private String firstName;
+    private String name;
 
     @Column(nullable = false)
-    private String lastName;
-
-    @Column(nullable = false, unique = true)
     private String email;
-
-    @Column(nullable = false)
-    private String password;
 
     @Column(nullable = false)
     private String phone;
 
-    @Column(name = "date_of_birth")
+    @Column(nullable = false)
     @Temporal(TemporalType.DATE)
-    private Date dateOfBirth;
+    private Date dob;
 
     @Column(nullable = false)
     private String gender;
 
-    @Column(length = 1000)
+    @Column(nullable = false)
     private String address;
 
-    @Column(nullable = false)
-    private String status;
-
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 

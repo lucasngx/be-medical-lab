@@ -22,6 +22,15 @@ public class LabTest {
     @Column(length = 1000)
     private String description;
 
+    @Column
+    private String unit;
+
+    @Column(name = "ref_range_min")
+    private Double refRangeMin;
+
+    @Column(name = "ref_range_max")
+    private Double refRangeMax;
+
     @Column(nullable = false)
     private Double price;
 

@@ -16,6 +16,6 @@ public interface ExaminationRepository extends JpaRepository<Examination, Long> 
     List<Examination> findByDoctorId(Long doctorId);
     Page<Examination> findByStatus(ExaminationStatus status, Pageable pageable);
     List<Examination> findByExaminationDateBetween(Date startDate, Date endDate);
-    Page<Examination> findByPatientFirstNameContainingIgnoreCaseAndStatus(String patientName, ExaminationStatus status, Pageable pageable);
-    Page<Examination> findByPatientFirstNameContainingIgnoreCase(String patientName, Pageable pageable);
+    Page<Examination> findByPatientNameContainingIgnoreCaseAndStatus(String patientName, ExaminationStatus status, Pageable pageable);
+    Page<Examination> findByPatientNameContainingIgnoreCase(String patientName, Pageable pageable);
 }
