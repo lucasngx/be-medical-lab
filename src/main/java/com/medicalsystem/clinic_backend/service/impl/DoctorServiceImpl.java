@@ -99,12 +99,12 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public PaginatedResponse<Doctor> searchDoctors(String firstName, String lastName, Pageable pageable) {
+    public PaginatedResponse<Doctor> searchDoctors(String name, String specialization, Pageable pageable) {
         Page<Doctor> page;
-        if ((firstName != null && !firstName.isEmpty()) || (lastName != null && !lastName.isEmpty())) {
-            page = doctorRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
-                firstName != null ? firstName : "",
-                lastName != null ? lastName : "",
+        if ((name != null && !name.isEmpty()) || (specialization != null && !specialization.isEmpty())) {
+            page = doctorRepository.findByUser_NameContainingIgnoreCaseAndSpecializationContainingIgnoreCase(
+                name != null ? name : "",
+                specialization != null ? specialization : "",
                 pageable
             );
         } else {
@@ -127,12 +127,6 @@ public class DoctorServiceImpl implements DoctorService {
     @Override
     public List<Doctor> searchDoctorsByName(String name) {
         return doctorRepository.findByUser_NameContainingIgnoreCase(name);
-    }
-
-    @Override
-    public Doctor getDoctorByLicenseNumber(String licenseNumber) {
-        return doctorRepository.findByLicenseNumber(licenseNumber)
-            .orElseThrow(() -> new ResourceNotFoundException("Doctor not found with license number: " + licenseNumber));
     }
 
     @Override

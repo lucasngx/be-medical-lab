@@ -1,6 +1,7 @@
 package com.medicalsystem.clinic_backend.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import java.util.Date;
 @Table(name = "prescription_items")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class PrescriptionItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,16 +32,16 @@ public class PrescriptionItem {
     private String frequency;
 
     @Column(nullable = false)
-    private String duration;
+    private Integer duration;
 
     @Column(length = 1000)
     private String instructions;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 

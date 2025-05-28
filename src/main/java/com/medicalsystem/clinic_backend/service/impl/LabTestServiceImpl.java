@@ -73,6 +73,6 @@ public class LabTestServiceImpl implements LabTestService {
 
     @Override
     public List<LabTest> getLabTestsByPatientId(Long patientId) {
-        return labTestRepository.findByPatientId(patientId);
+        return labTestRepository.findByAssignedTests_PatientId(patientId);
     }
 } 

@@ -18,14 +18,29 @@ public class TestResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "technician_id", nullable = false)
+    private Technician technician;
+
+    @ManyToOne
+    @JoinColumn(name = "patient_id", nullable = false)
+    private Patient patient;
+
+    @ManyToOne
+    @JoinColumn(name = "test_id", nullable = false)
+    private LabTest test;
+
     @Column(name = "assigned_test_id", nullable = false)
     private Long assignedTestId;
 
-    @Column(name = "technician_id", nullable = false)
-    private Long technicianId;
-
     @Column(name = "result_data", columnDefinition = "TEXT")
     private String resultData;
+
+    @Column(nullable = false)
+    private String result;
+
+    @Column(nullable = false)
+    private String notes;
 
     @Column(name = "result_date", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -50,6 +65,8 @@ public class TestResult {
     protected void onCreate() {
         createdAt = new Date();
         updatedAt = new Date();
+        resultDate = new Date();
+        status = ResultStatus.PENDING;
     }
 
     @PreUpdate

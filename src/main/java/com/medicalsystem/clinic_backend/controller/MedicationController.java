@@ -50,9 +50,4 @@ public class MedicationController {
         medicationService.deleteMedication(id);
         return ResponseEntity.ok().build();
     }
-
-    @GetMapping("/category/{category}")
-    public ResponseEntity<List<Medication>> getMedicationsByCategory(@PathVariable String category) {
-        return ResponseEntity.ok(medicationService.getMedicationsByCategory(category));
-    }
 }

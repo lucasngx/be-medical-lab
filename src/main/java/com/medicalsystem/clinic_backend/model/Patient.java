@@ -16,23 +16,26 @@ public class Patient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
-    private String email;
-
-    @Column(nullable = false)
     private String phone;
 
-    @Column(nullable = false)
-    @Temporal(TemporalType.DATE)
-    private Date dob;
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(name = "date_of_birth", nullable = false)
+    private String dateOfBirth;
 
     @Column(nullable = false)
     private String gender;
 
-    @Column(nullable = false)
+    @Column
     private String address;
 
     @Column(name = "created_at", nullable = false)

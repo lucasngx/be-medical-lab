@@ -30,11 +30,11 @@ public class DoctorController {
 
     @GetMapping("/search")
     public ResponseEntity<PaginatedResponse<Doctor>> searchDoctors(
-            @RequestParam(required = false) String firstName,
-            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String specialization,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(doctorService.searchDoctors(firstName, lastName, PageRequest.of(page, size)));
+        return ResponseEntity.ok(doctorService.searchDoctors(name, specialization, PageRequest.of(page, size)));
     }
 
     @GetMapping("/specialization/{specialization}")

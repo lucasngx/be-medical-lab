@@ -21,8 +21,7 @@ public interface TechnicianService {
     Technician createTechnician(Technician technician);
     Technician updateTechnician(Long id, Technician technicianDetails);
     void deleteTechnician(Long id);
-    PaginatedResponse<Technician> searchTechnicians(String firstName, String lastName, Pageable pageable);
+    PaginatedResponse<Technician> searchTechnicians(String name, String department, Pageable pageable);
     List<Technician> searchTechniciansByName(String name);
-    List<Technician> getTechniciansBySpecialization(String specialization);
-    Technician getById(Long id);
+    List<Technician> getTechniciansByDepartment(String department);
 }

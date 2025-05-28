@@ -11,10 +11,10 @@ import java.util.Optional;
 
 @Repository
 public interface PrescriptionRepository extends JpaRepository<Prescription, Long> {
+    List<Prescription> findByPatient_Id(Long patientId);
+    List<Prescription> findByDoctor_Id(Long doctorId);
     Optional<Prescription> findByExaminationId(Long examinationId);
     List<Prescription> findByDiagnosisContainingIgnoreCase(String diagnosisKeyword);
-    List<Prescription> findByPatientId(Long patientId);
-    List<Prescription> findByDoctorId(Long doctorId);
-    Page<Prescription> findByPatientId(Long patientId, Pageable pageable);
-    Page<Prescription> findByDoctorId(Long doctorId, Pageable pageable);
+    Page<Prescription> findByPatient_Id(Long patientId, Pageable pageable);
+    Page<Prescription> findByDoctor_Id(Long doctorId, Pageable pageable);
 }

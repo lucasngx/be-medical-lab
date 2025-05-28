@@ -68,9 +68,4 @@ public class MedicationServiceImpl implements MedicationService {
     public List<Medication> searchMedicationsByName(String name) {
         return medicationRepository.findByNameContainingIgnoreCase(name);
     }
-
-    @Override
-    public List<Medication> getMedicationsByCategory(String category) {
-        return medicationRepository.findByCategory(category);
-    }
 } 

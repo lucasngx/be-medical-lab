@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "technicians")
@@ -28,6 +30,12 @@ public class Technician {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @OneToMany(mappedBy = "technician", cascade = CascadeType.ALL)
+    private Set<TestResult> testResults = new HashSet<>();
+
+    @OneToMany(mappedBy = "technician", cascade = CascadeType.ALL)
+    private Set<AssignedTest> assignedTests = new HashSet<>();
 
     @Column(name = "created_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)

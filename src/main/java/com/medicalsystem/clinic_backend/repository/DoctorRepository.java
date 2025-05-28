@@ -14,9 +14,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     Optional<Doctor> findByEmail(String email);
     List<Doctor> findByUser_NameContainingIgnoreCase(String name);
     List<Doctor> findBySpecialization(String specialization);
-    Optional<Doctor> findByLicenseNumber(String licenseNumber);
-    Page<Doctor> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(String firstName, String lastName, Pageable pageable);
+    Page<Doctor> findByUser_NameContainingIgnoreCase(String name, Pageable pageable);
     Page<Doctor> findBySpecializationContainingIgnoreCase(String specialization, Pageable pageable);
-    Page<Doctor> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseAndSpecializationContainingIgnoreCase(String firstName, String lastName, String specialization, Pageable pageable);
-    List<Doctor> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(String firstName, String lastName);
+    Page<Doctor> findByUser_NameContainingIgnoreCaseAndSpecializationContainingIgnoreCase(String name, String specialization, Pageable pageable);
 }

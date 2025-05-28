@@ -13,9 +13,8 @@ public interface DoctorService {
     Doctor createDoctor(Doctor doctor);
     Doctor updateDoctor(Long id, Doctor doctorDetails);
     void deleteDoctor(Long id);
-    PaginatedResponse<Doctor> searchDoctors(String firstName, String lastName, Pageable pageable);
+    PaginatedResponse<Doctor> searchDoctors(String name, String specialization, Pageable pageable);
     List<Doctor> getDoctorsBySpecialization(String specialization);
     List<Doctor> searchDoctorsByName(String name);
-    Doctor getDoctorByLicenseNumber(String licenseNumber);
     Doctor getById(Long id);
 } 

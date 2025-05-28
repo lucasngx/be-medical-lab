@@ -15,7 +15,7 @@ import java.util.List;
 @Repository
 public interface AssignedTestRepository extends JpaRepository<AssignedTest, Long> {
     List<AssignedTest> findByExaminationId(Long examinationId);
-    List<AssignedTest> findByLabTestId(Long labTestId);
+    List<AssignedTest> findByTestId(Long testId);
     Page<AssignedTest> findByStatus(Pageable pageable, TestStatus status);
     
     @Query("SELECT at FROM AssignedTest at WHERE at.examination.patient.id = :patientId")
@@ -26,7 +26,7 @@ public interface AssignedTestRepository extends JpaRepository<AssignedTest, Long
 
     @Query("SELECT at FROM AssignedTest at WHERE " +
            "(:searchTerm IS NULL OR LOWER(at.examination.patient.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-           "LOWER(at.labTest.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))) AND " +
+           "LOWER(at.test.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))) AND " +
            "(:status IS NULL OR at.status = :status)")
     Page<AssignedTest> searchAssignedTests(
         @Param("searchTerm") String searchTerm,

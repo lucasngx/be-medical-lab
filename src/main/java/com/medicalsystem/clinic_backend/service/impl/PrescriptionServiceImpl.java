@@ -76,9 +76,9 @@ public class PrescriptionServiceImpl implements PrescriptionService {
     public Prescription updatePrescription(Long id, Prescription prescriptionDetails) {
         Prescription prescription = getPrescriptionById(id);
 
-        prescription.setPatientId(prescriptionDetails.getPatientId());
-        prescription.setDoctorId(prescriptionDetails.getDoctorId());
+        // Update basic fields
         prescription.setDiagnosis(prescriptionDetails.getDiagnosis());
+        prescription.setInstructions(prescriptionDetails.getInstructions());
         prescription.setNotes(prescriptionDetails.getNotes());
         prescription.setUpdatedAt(new Date());
 
@@ -103,11 +103,11 @@ public class PrescriptionServiceImpl implements PrescriptionService {
 
     @Override
     public List<Prescription> getPrescriptionsByPatientId(Long patientId) {
-        return prescriptionRepository.findByPatientId(patientId);
+        return prescriptionRepository.findByPatient_Id(patientId);
     }
 
     @Override
     public List<Prescription> getPrescriptionsByDoctorId(Long doctorId) {
-        return prescriptionRepository.findByDoctorId(doctorId);
+        return prescriptionRepository.findByDoctor_Id(doctorId);
     }
 } 

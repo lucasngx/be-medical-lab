@@ -2,6 +2,7 @@ package com.medicalsystem.clinic_backend.model;
 
 import com.medicalsystem.clinic_backend.model.enums.ExaminationStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.util.Date;
 @Table(name = "examinations")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Examination {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +33,9 @@ public class Examination {
     @Column(nullable = false)
     private String symptoms;
 
+    @Column(nullable = false)
+    private String diagnosis;
+
     @Column(length = 1000)
     private String notes;
 
@@ -38,11 +43,11 @@ public class Examination {
     @Column(nullable = false)
     private ExaminationStatus status;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 

@@ -30,6 +30,9 @@ public class Doctor {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(name = "license_number", nullable = false, unique = true)
+    private String licenseNumber;
+
     @Column(name = "created_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;

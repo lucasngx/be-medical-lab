@@ -10,6 +10,9 @@ import com.medicalsystem.clinic_backend.response.PaginatedResponse;
 import com.medicalsystem.clinic_backend.service.AssignedTestService;
 import com.medicalsystem.clinic_backend.service.ExaminationService;
 import com.medicalsystem.clinic_backend.service.LabTestService;
+import com.medicalsystem.clinic_backend.service.DoctorService;
+import com.medicalsystem.clinic_backend.service.PatientService;
+import com.medicalsystem.clinic_backend.service.TechnicianService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +29,9 @@ public class AssignedTestServiceImpl implements AssignedTestService {
     private final AssignedTestRepository assignedTestRepository;
     private final ExaminationService examinationService;
     private final LabTestService labTestService;
+    private final DoctorService doctorService;
+    private final PatientService patientService;
+    private final TechnicianService technicianService;
 
     @Override
     public PaginatedResponse<AssignedTest> getAllAssignedTests(Pageable pageable) {
@@ -47,9 +53,30 @@ public class AssignedTestServiceImpl implements AssignedTestService {
     @Override
     @Transactional
     public AssignedTest createAssignedTest(AssignedTest assignedTest) {
+        // Ensure all relationships are fetched
+        if (assignedTest.getExamination() != null && assignedTest.getExamination().getId() != null) {
+            assignedTest.setExamination(examinationService.getExaminationById(assignedTest.getExamination().getId()));
+        }
+        if (assignedTest.getTest() != null && assignedTest.getTest().getId() != null) {
+            assignedTest.setTest(labTestService.getLabTestById(assignedTest.getTest().getId()));
+        }
+        if (assignedTest.getDoctor() != null && assignedTest.getDoctor().getId() != null) {
+            assignedTest.setDoctor(doctorService.getDoctorById(assignedTest.getDoctor().getId()));
+        }
+        if (assignedTest.getPatient() != null && assignedTest.getPatient().getId() != null) {
+            assignedTest.setPatient(patientService.getPatientById(assignedTest.getPatient().getId()));
+        }
+        if (assignedTest.getTechnician() != null && assignedTest.getTechnician().getId() != null) {
+            assignedTest.setTechnician(technicianService.getTechnicianById(assignedTest.getTechnician().getId()));
+        }
+
+        // Set timestamps and status
         assignedTest.setCreatedAt(new Date());
         assignedTest.setUpdatedAt(new Date());
         assignedTest.setStatus(TestStatus.PENDING);
+        assignedTest.setAssignedDate(new Date());
+
+        // Save and return
         return assignedTestRepository.save(assignedTest);
     }
 

@@ -13,5 +13,4 @@ public interface MedicationService {
     Medication updateMedication(Long id, Medication medication);
     void deleteMedication(Long id);
     List<Medication> searchMedicationsByName(String name);
-    List<Medication> getMedicationsByCategory(String category);
 } 

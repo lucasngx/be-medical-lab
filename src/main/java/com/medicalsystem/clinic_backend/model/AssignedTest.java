@@ -18,31 +18,39 @@ public class AssignedTest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "examination_id", nullable = false)
-    private Examination examination;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "test_id", nullable = false, foreignKey = @ForeignKey(name = "fk_assigned_test_test_id"))
+    private LabTest test;
+
+    public void setTest(LabTest test) {
+        this.test = test;
+    }
 
     @ManyToOne
-    @JoinColumn(name = "lab_test_id", nullable = false)
-    private LabTest labTest;
+    @JoinColumn(name = "patient_id", nullable = false)
+    private Patient patient;
+
+    @ManyToOne
+    @JoinColumn(name = "doctor_id", nullable = false)
+    private Doctor doctor;
 
     @ManyToOne
     @JoinColumn(name = "technician_id")
     private Technician technician;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private TestStatus status;
+    @ManyToOne
+    @JoinColumn(name = "examination_id", nullable = false)
+    private Examination examination;
 
-    @Column(length = 1000)
+    @Column
     private String result;
 
-    @Column(length = 1000)
+    @Column
     private String notes;
 
-    @Column(name = "assigned_date", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date assignedDate;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TestStatus status;
 
     @Column(name = "created_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -52,10 +60,15 @@ public class AssignedTest {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
+    @Column(name = "assigned_date", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date assignedDate;
+
     @PrePersist
     protected void onCreate() {
         createdAt = new Date();
         updatedAt = new Date();
+        assignedDate = new Date();
     }
 
     @PreUpdate

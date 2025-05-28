@@ -99,14 +99,36 @@ public class TechnicianServiceImpl implements TechnicianService {
     }
 
     @Override
-    public PaginatedResponse<Technician> searchTechnicians(String firstName, String lastName, Pageable pageable) {
+    public PaginatedResponse<Technician> searchTechnicians(String name, String department, Pageable pageable) {
         Page<Technician> page;
-        if ((firstName != null && !firstName.isEmpty()) || (lastName != null && !lastName.isEmpty())) {
-            page = technicianRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
-                firstName != null ? firstName : "",
-                lastName != null ? lastName : "",
-                pageable
-            );
+        if ((name != null && !name.isEmpty()) || (department != null && !department.isEmpty())) {
+            if (name != null && !name.isEmpty() && department != null && !department.isEmpty()) {
+                // First get all technicians by name
+                page = technicianRepository.findByUser_NameContainingIgnoreCase(name, pageable);
+                // Then filter the content by department
+                List<Technician> filteredContent = page.getContent().stream()
+                    .filter(tech -> tech.getDepartment().toLowerCase().contains(department.toLowerCase()))
+                    .toList();
+                // Create a new page with filtered content
+                page = new org.springframework.data.domain.PageImpl<>(
+                    filteredContent,
+                    pageable,
+                    filteredContent.size()
+                );
+            } else if (name != null && !name.isEmpty()) {
+                page = technicianRepository.findByUser_NameContainingIgnoreCase(name, pageable);
+            } else {
+                // If only department is provided, get all and filter
+                page = technicianRepository.findAll(pageable);
+                List<Technician> filteredContent = page.getContent().stream()
+                    .filter(tech -> tech.getDepartment().toLowerCase().contains(department.toLowerCase()))
+                    .toList();
+                page = new org.springframework.data.domain.PageImpl<>(
+                    filteredContent,
+                    pageable,
+                    filteredContent.size()
+                );
+            }
         } else {
             page = technicianRepository.findAll(pageable);
         }
@@ -125,12 +147,7 @@ public class TechnicianServiceImpl implements TechnicianService {
     }
 
     @Override
-    public List<Technician> getTechniciansBySpecialization(String specialization) {
-        return technicianRepository.findBySpecialization(specialization);
-    }
-
-    @Override
-    public Technician getById(Long id) {
-        return getTechnicianById(id);
+    public List<Technician> getTechniciansByDepartment(String department) {
+        return technicianRepository.findByDepartment(department);
     }
 } 

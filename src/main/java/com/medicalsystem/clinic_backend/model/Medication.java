@@ -19,11 +19,23 @@ public class Medication {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "dosage_info", nullable = false)
+    @Column(nullable = false)
+    private String description;
+
+    @Column(nullable = false)
+    private String dosage;
+
+    @Column(name = "dosage_info")
     private String dosageInfo;
 
     @Column(name = "side_effects")
     private String sideEffects;
+
+    @Column(nullable = false)
+    private String route;
+
+    @Column(nullable = false)
+    private double price;
 
     @Column(name = "created_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
