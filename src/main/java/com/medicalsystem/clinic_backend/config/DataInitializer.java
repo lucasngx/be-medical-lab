@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.ArrayList;
 
 @Component
 @RequiredArgsConstructor
@@ -44,119 +45,108 @@ public class DataInitializer implements CommandLineRunner {
         // Initialize organizations
         Organization mainHospital = createOrganization("Main Medical Center", "123 Medical Street", "123-456-7890", "contact@medicalcenter.com");
         Organization branchClinic = createOrganization("Branch Clinic", "456 Health Avenue", "123-456-7891", "contact@branchclinic.com");
+        Organization pediatricClinic = createOrganization("Pediatric Center", "789 Child Ave", "123-456-7892", "contact@pediatric.com");
 
-        // Initialize doctors
+        // Initialize more doctors with different specializations
         Doctor doctor1 = createDoctor("John Doe", "doctor1@example.com", "password", "Cardiology", "DOC123456", mainHospital);
         Doctor doctor2 = createDoctor("Jane Smith", "doctor2@example.com", "password", "Neurology", "DOC789012", mainHospital);
         Doctor doctor3 = createDoctor("Mike Johnson", "doctor3@example.com", "password", "Pediatrics", "DOC345678", branchClinic);
+        Doctor doctor4 = createDoctor("Sarah Wilson", "doctor4@example.com", "password", "Orthopedics", "DOC901234", mainHospital);
+        Doctor doctor5 = createDoctor("Robert Brown", "doctor5@example.com", "password", "Dermatology", "DOC567890", pediatricClinic);
 
-        // Initialize technicians
+        // Initialize more technicians
         Technician tech1 = createTechnician("Alice Brown", "tech1@example.com", "password", "Laboratory", mainHospital);
         Technician tech2 = createTechnician("Bob Wilson", "tech2@example.com", "password", "Radiology", mainHospital);
         Technician tech3 = createTechnician("Carol Davis", "tech3@example.com", "password", "Laboratory", branchClinic);
+        Technician tech4 = createTechnician("David Lee", "tech4@example.com", "password", "Pathology", mainHospital);
+        Technician tech5 = createTechnician("Eva Chen", "tech5@example.com", "password", "Blood Bank", pediatricClinic);
 
-        // Initialize patients
+        // Initialize more patients with varied demographics
         Patient patient1 = createPatient("Sarah Miller", "patient1@example.com", "123-456-7892", "1990-01-01", "Female", mainHospital);
         Patient patient2 = createPatient("Tom Wilson", "patient2@example.com", "123-456-7893", "1985-05-15", "Male", mainHospital);
         Patient patient3 = createPatient("Emma Davis", "patient3@example.com", "123-456-7894", "1995-12-30", "Female", branchClinic);
+        Patient patient4 = createPatient("James Brown", "patient4@example.com", "123-456-7895", "1978-07-22", "Male", mainHospital);
+        Patient patient5 = createPatient("Lucy White", "patient5@example.com", "123-456-7896", "2000-03-10", "Female", pediatricClinic);
+        Patient patient6 = createPatient("Michael Chen", "patient6@example.com", "123-456-7897", "1992-11-05", "Male", branchClinic);
+        Patient patient7 = createPatient("Sophie Taylor", "patient7@example.com", "123-456-7898", "1988-09-15", "Female", mainHospital);
+        Patient patient8 = createPatient("Oliver Green", "patient8@example.com", "123-456-7899", "1975-04-20", "Male", pediatricClinic);
 
-        // Initialize lab tests
+        // Initialize more lab tests with varied prices
         LabTest bloodTest = createLabTest("Complete Blood Count", "CBC", "Blood test to measure different components of blood", 50.00);
         LabTest urineTest = createLabTest("Urinalysis", "UA", "Analysis of urine sample", 30.00);
         LabTest xrayTest = createLabTest("Chest X-Ray", "CXR", "Radiographic image of the chest", 100.00);
+        LabTest mriTest = createLabTest("MRI Brain", "MRI", "Magnetic resonance imaging of the brain", 500.00);
+        LabTest ecgTest = createLabTest("Electrocardiogram", "ECG", "Recording of heart's electrical activity", 75.00);
+        LabTest colonoscopyTest = createLabTest("Colonoscopy", "COL", "Examination of the large intestine", 300.00);
+        LabTest ultrasoundTest = createLabTest("Ultrasound", "US", "Imaging using sound waves", 150.00);
+        LabTest biopsyTest = createLabTest("Biopsy", "BIO", "Examination of tissue sample", 250.00);
 
-        // Verify lab tests were created and saved
-        if (bloodTest == null || urineTest == null || xrayTest == null) {
-            throw new IllegalStateException("Failed to create lab tests");
-        }
-
-        // Ensure all tests have IDs (they should already have IDs from createLabTest)
-        if (bloodTest.getId() == null || urineTest.getId() == null || xrayTest.getId() == null) {
-            throw new IllegalStateException("Failed to save lab tests - no IDs generated");
-        }
-
-        // Fetch the saved tests to ensure they are managed entities with IDs
-        LabTest savedBloodTest = labTestRepository.findById(bloodTest.getId()).orElseThrow();
-        LabTest savedXrayTest = labTestRepository.findById(xrayTest.getId()).orElseThrow();
-
-        // Initialize medications
+        // Initialize more medications
         Medication med1 = createMedication("Amoxicillin", "Antibiotic", "500mg", "Oral", 10.00);
         Medication med2 = createMedication("Ibuprofen", "Pain reliever", "400mg", "Oral", 5.00);
         Medication med3 = createMedication("Insulin", "Diabetes medication", "100 units/ml", "Injection", 25.00);
+        Medication med4 = createMedication("Lisinopril", "Blood pressure medication", "10mg", "Oral", 15.00);
+        Medication med5 = createMedication("Metformin", "Diabetes medication", "850mg", "Oral", 8.00);
+        Medication med6 = createMedication("Omeprazole", "Acid reflux medication", "20mg", "Oral", 12.00);
 
-        // Create some examinations only if they don't exist
-        Examination exam1 = null;
-        Examination exam2 = null;
-        Examination exam3 = null;
-        if (examinationRepository.count() == 0) {
-            exam1 = createExamination(doctor1, patient1, "Regular checkup", "Patient is in good health");
-            exam2 = createExamination(doctor2, patient2, "Neurological consultation", "Follow-up required");
-            exam3 = createExamination(doctor3, patient3, "Pediatric checkup", "Vaccination needed");
-        } else {
-            List<Examination> existingExams = examinationRepository.findAll();
-            if (!existingExams.isEmpty()) {
-                exam1 = existingExams.get(0);
-                if (existingExams.size() > 1) {
-                    exam2 = existingExams.get(1);
-                }
-                if (existingExams.size() > 2) {
-                    exam3 = existingExams.get(2);
-                }
-            }
-        }
+        // Create more examinations
+        Examination exam1 = createExamination(doctor1, patient1, "Hypertension", "Blood pressure elevated");
+        Examination exam2 = createExamination(doctor2, patient2, "Migraine", "Recurring headaches");
+        Examination exam3 = createExamination(doctor3, patient3, "Regular checkup", "All normal");
+        Examination exam4 = createExamination(doctor4, patient4, "Back pain", "Lumbar strain");
+        Examination exam5 = createExamination(doctor5, patient5, "Skin rash", "Allergic reaction");
+        Examination exam6 = createExamination(doctor1, patient6, "Diabetes Type 2", "Blood sugar monitoring required");
+        Examination exam7 = createExamination(doctor2, patient7, "Anxiety Disorder", "Regular therapy sessions needed");
+        Examination exam8 = createExamination(doctor3, patient8, "Childhood Asthma", "Inhaler prescription needed");
 
-        // Create some prescriptions only if we have valid examinations
-        if (prescriptionRepository.count() == 0 && exam1 != null) {
-            Set<Medication> medications1 = new HashSet<>();
-            if (med1 != null) medications1.add(med1);
-            if (med2 != null) medications1.add(med2);
-            
-            Set<Medication> medications2 = new HashSet<>();
-            if (med3 != null) medications2.add(med3);
-            
-            createPrescription(doctor1, patient1, "Take medication for 7 days", medications1, exam1);
-            if (exam2 != null) {
-                createPrescription(doctor2, patient2, "Take medication for 14 days", medications2, exam2);
-            }
-        }
+        // Create prescriptions with medications
+        Set<Medication> diabetesMeds = new HashSet<>();
+        diabetesMeds.add(med3);
+        diabetesMeds.add(med5);
 
-        // Create some assigned tests first
-        AssignedTest assignedTest1 = null;
-        AssignedTest assignedTest2 = null;
+        Set<Medication> painMeds = new HashSet<>();
+        painMeds.add(med2);
+        painMeds.add(med6);
+
+        Set<Medication> antibioticMeds = new HashSet<>();
+        antibioticMeds.add(med1);
+
+        createPrescription(doctor1, patient6, "Take with meals", diabetesMeds, exam6);
+        createPrescription(doctor4, patient4, "Take as needed for pain", painMeds, exam4);
+        createPrescription(doctor5, patient5, "Take twice daily", antibioticMeds, exam5);
+
+        // Create more assigned tests with different statuses
+        List<AssignedTest> assignedTests = new ArrayList<>();
         if (assignedTestRepository.count() == 0) {
-            // Ensure we have valid test entities with IDs
-            if (savedBloodTest == null || savedBloodTest.getId() == null) {
-                throw new IllegalStateException("Blood test not properly saved before creating assigned test");
-            }
-            if (savedXrayTest == null || savedXrayTest.getId() == null) {
-                throw new IllegalStateException("X-ray test not properly saved before creating assigned test");
-            }
+            AssignedTest assignedTest1 = createAssignedTest(doctor1, patient1, bloodTest, tech1, TestStatus.PENDING);
+            AssignedTest assignedTest2 = createAssignedTest(doctor2, patient2, mriTest, tech2, TestStatus.COMPLETED);
+            AssignedTest assignedTest3 = createAssignedTest(doctor3, patient3, ultrasoundTest, tech3, TestStatus.IN_PROGRESS);
+            AssignedTest assignedTest4 = createAssignedTest(doctor4, patient4, xrayTest, tech4, TestStatus.PENDING);
+            AssignedTest assignedTest5 = createAssignedTest(doctor5, patient5, ecgTest, tech5, TestStatus.COMPLETED);
+            AssignedTest assignedTest6 = createAssignedTest(doctor1, patient6, bloodTest, tech1, TestStatus.COMPLETED);
+            AssignedTest assignedTest7 = createAssignedTest(doctor2, patient7, mriTest, tech2, TestStatus.IN_PROGRESS);
+            AssignedTest assignedTest8 = createAssignedTest(doctor3, patient8, ultrasoundTest, tech3, TestStatus.PENDING);
             
-            // Re-fetch the tests to ensure they are managed entities
-            LabTest managedBloodTest = labTestRepository.findById(savedBloodTest.getId())
-                .orElseThrow(() -> new IllegalStateException("Blood test not found after saving"));
-            LabTest managedXrayTest = labTestRepository.findById(savedXrayTest.getId())
-                .orElseThrow(() -> new IllegalStateException("X-ray test not found after saving"));
-            
-            // Create assigned tests with managed test entities
-            assignedTest1 = createAssignedTest(doctor1, patient1, managedBloodTest, tech1, TestStatus.PENDING);
-            assignedTest2 = createAssignedTest(doctor2, patient2, managedXrayTest, tech2, TestStatus.COMPLETED);
+            assignedTests.add(assignedTest1);
+            assignedTests.add(assignedTest2);
+            assignedTests.add(assignedTest3);
+            assignedTests.add(assignedTest4);
+            assignedTests.add(assignedTest5);
+            assignedTests.add(assignedTest6);
+            assignedTests.add(assignedTest7);
+            assignedTests.add(assignedTest8);
         } else {
-            List<AssignedTest> existingTests = assignedTestRepository.findAll();
-            if (!existingTests.isEmpty()) {
-                assignedTest1 = existingTests.get(0);
-                if (existingTests.size() > 1) {
-                    assignedTest2 = existingTests.get(1);
-                }
-            }
+            assignedTests = assignedTestRepository.findAll();
         }
 
-        // Create test results only if we have assigned tests
-        if (testResultRepository.count() == 0 && assignedTest1 != null) {
-            createTestResult(tech1, patient1, savedBloodTest, "Normal", "All parameters within range", assignedTest1);
-            if (assignedTest2 != null) {
-                createTestResult(tech2, patient2, savedXrayTest, "Clear", "No abnormalities detected", assignedTest2);
-            }
+        // Create more test results with detailed findings
+        if (testResultRepository.count() == 0 && !assignedTests.isEmpty()) {
+            createTestResult(tech1, patient1, bloodTest, "Slightly elevated white blood cells", "Recommend follow-up", assignedTests.get(0));
+            createTestResult(tech2, patient2, mriTest, "No abnormalities detected", "Regular checkup advised", assignedTests.get(1));
+            createTestResult(tech3, patient3, ultrasoundTest, "Normal study", "No concerns noted", assignedTests.get(2));
+            createTestResult(tech1, patient6, bloodTest, "Elevated glucose levels", "Diabetes monitoring required", assignedTests.get(5));
+            createTestResult(tech2, patient7, mriTest, "Mild anxiety-related changes", "Follow-up in 3 months", assignedTests.get(6));
+            createTestResult(tech3, patient8, ultrasoundTest, "Clear lung fields", "Continue current treatment", assignedTests.get(7));
         }
     }
 
@@ -336,20 +326,18 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private Examination createExamination(Doctor doctor, Patient patient, String diagnosis, String notes) {
-        if (examinationRepository.count() == 0) {
-            Examination exam = new Examination();
-            exam.setDoctor(doctor);
-            exam.setPatient(patient);
-            exam.setDiagnosis(diagnosis);
-            exam.setNotes(notes);
-            exam.setExaminationDate(new Date());
-            exam.setSymptoms("Initial consultation");
-            exam.setStatus(ExaminationStatus.SCHEDULED);
-            exam.setCreatedAt(new Date());
-            exam.setUpdatedAt(new Date());
-            return examinationRepository.save(exam);
-        }
-        return null;
+        // Remove the count check to always create a new examination
+        Examination exam = new Examination();
+        exam.setDoctor(doctor);
+        exam.setPatient(patient);
+        exam.setDiagnosis(diagnosis);
+        exam.setNotes(notes);
+        exam.setExaminationDate(new Date());
+        exam.setSymptoms("Initial consultation");
+        exam.setStatus(ExaminationStatus.SCHEDULED);
+        exam.setCreatedAt(new Date());
+        exam.setUpdatedAt(new Date());
+        return examinationRepository.save(exam);
     }
 
     private Prescription createPrescription(Doctor doctor, Patient patient, String instructions, Set<Medication> medications, Examination examination) {

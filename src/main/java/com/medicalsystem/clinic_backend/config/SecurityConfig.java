@@ -39,12 +39,12 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()  // Allow all OPTIONS requests
                 .requestMatchers("/api/auth/**", "/auth/**", "/swagger-ui/**", "/api-docs/**").permitAll()
-                .requestMatchers("/api/doctors/**").hasRole("DOCTOR")
-                .requestMatchers("/api/technicians/**").hasRole("TECHNICIAN")
-                .requestMatchers("/api/examinations/**").hasRole("DOCTOR")
-                .requestMatchers("/api/test-results/**").hasAnyRole("DOCTOR", "TECHNICIAN")
-                .requestMatchers("/api/prescriptions/**").hasRole("DOCTOR")
-                .anyRequest().authenticated()
+                // .requestMatchers("/api/doctors/**").hasAnyRole("DOCTOR", "TECHNICIAN")
+                // .requestMatchers("/api/technicians/**").hasAnyRole("DOCTOR", "TECHNICIAN")
+                // .requestMatchers("/api/examinations/**").hasAnyRole("DOCTOR", "TECHNICIAN")
+                // .requestMatchers("/api/test-results/**").hasAnyRole("DOCTOR", "TECHNICIAN")
+                // .requestMatchers("/api/prescriptions/**").hasAnyRole("DOCTOR", "TECHNICIAN")
+                .anyRequest().permitAll()
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
